@@ -42,7 +42,7 @@ func Load() Config {
 	return Config{
 		AppEnv:         getEnv("APP_ENV", "development"),
 		Port:           getEnv("PORT", "8080"),
-		DatabaseURL:    getEnv("DATABASE_URL", "postgres://comic:comic@localhost:5432/comic?sslmode=disable"),
+		DatabaseURL:    NormalizeDatabaseURL(getEnv("DATABASE_URL", "postgres://comic:comic@localhost:5432/comic?sslmode=disable")),
 		SessionSecret:  getEnv("SESSION_SECRET", defaultSessionSecret),
 		AdminUsername:  getEnv("ADMIN_USERNAME", "admin"),
 		AdminPassword:  getEnv("ADMIN_PASSWORD", defaultAdminPassword),
@@ -55,6 +55,19 @@ func Load() Config {
 
 func (c Config) IsProduction() bool {
 	return c.AppEnv == "production"
+}
+
+// NormalizeDatabaseURL adjusts Render internal Postgres URLs for production startup.
+func NormalizeDatabaseURL(dsn string) string {
+	if dsn == "" {
+		return dsn
+	}
+	// Render private-network URLs often ship with sslmode=disable; TLS is not used there.
+	if strings.Contains(dsn, "sslmode=disable") &&
+		(strings.Contains(dsn, ".render.com") || strings.Contains(dsn, "dpg-")) {
+		return strings.Replace(dsn, "sslmode=disable", "sslmode=prefer", 1)
+	}
+	return dsn
 }
 
 // Validate fails fast when production is misconfigured.

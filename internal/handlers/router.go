@@ -58,6 +58,10 @@ func NewRouter(deps Deps) *gin.Engine {
 		r.Static("/uploads", deps.UploadDir)
 	}
 
+	r.GET("/health", func(c *gin.Context) {
+		c.String(http.StatusOK, "ok")
+	})
+
 	pub := r.Group("/")
 	{
 		home := public.NewHomeHandler(deps.Events, deps.Videos, deps.Photos, deps.Merch, deps.Settings, renderer)

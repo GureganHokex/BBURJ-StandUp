@@ -18,6 +18,7 @@ import (
 	"github.com/burj/comic/internal/storage"
 	"github.com/burj/comic/web"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -28,7 +29,16 @@ func main() {
 		log.Fatalf("config: %v", err)
 	}
 
-	db, err := database.Connect(cfg.DatabaseURL, cfg.AppEnv)
+	var db *gorm.DB
+	var err error
+	for attempt := 1; attempt <= 10; attempt++ {
+		db, err = database.Connect(cfg.DatabaseURL, cfg.AppEnv)
+		if err == nil {
+			break
+		}
+		log.Printf("database connect attempt %d/10: %v", attempt, err)
+		time.Sleep(3 * time.Second)
+	}
 	if err != nil {
 		log.Fatalf("database: %v", err)
 	}
