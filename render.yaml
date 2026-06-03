@@ -1,8 +1,9 @@
-# Render Blueprint — Comic Site (Go + PostgreSQL)
-# Деплой: https://dashboard.render.com/blueprint/new?repo=<URL_ВАШЕГО_GITHUB_РЕПО>
+# Render Blueprint — BBURJ-StandUp (Go + PostgreSQL)
+# Repo: https://github.com/GureganHokex/BBURJ-StandUp
+# Deploy: https://dashboard.render.com/blueprint/new?repo=https://github.com/GureganHokex/BBURJ-StandUp
 
 databases:
-  - name: comic-db
+  - name: bburj-db
     databaseName: comic
     user: comic
     plan: free
@@ -10,10 +11,12 @@ databases:
 
 services:
   - type: web
-    name: comic-site
+    name: bburj-standup
     runtime: docker
     plan: starter
     region: frankfurt
+    repo: https://github.com/GureganHokex/BBURJ-StandUp
+    branch: main
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /
@@ -26,14 +29,14 @@ services:
         value: production
       - key: DATABASE_URL
         fromDatabase:
-          name: comic-db
+          name: bburj-db
           property: connectionString
       - key: SESSION_SECRET
-        sync: false
+        generateValue: true
       - key: ADMIN_USERNAME
         value: admin
       - key: ADMIN_PASSWORD
-        sync: false
+        generateValue: true
       - key: SECURE_COOKIES
         value: "true"
       - key: UPLOAD_DIR
