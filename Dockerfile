@@ -1,0 +1,24 @@
+FROM golang:1.23-alpine AS builder
+
+WORKDIR /app
+RUN apk add --no-cache git
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/comic ./cmd/app
+
+FROM alpine:3.20
+
+RUN apk add --no-cache ca-certificates tzdata \
+  && adduser -D -H -u 10001 appuser
+
+WORKDIR /app
+COPY --from=builder /bin/comic /app/comic
+COPY migrations /app/migrations
+RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads /app/migrations
+
+USER appuser
+EXPOSE 8080
+CMD ["/app/comic"]

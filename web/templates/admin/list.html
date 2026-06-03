@@ -1,0 +1,28 @@
+{{define "admin/list_content"}}
+<div class="mb-4 flex justify-between items-center">
+  <p class="text-sm text-slate-600">Управление: {{.Model.Name}}</p>
+  <a href="/admin/{{.Model.Slug}}/new" class="inline-flex items-center px-4 py-2 bg-green-700 text-white text-sm font-medium rounded hover:bg-green-800">+ Add</a>
+</div>
+<div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-50 border-b border-slate-200">
+      <tr>
+        <th class="text-left px-4 py-3 font-semibold text-slate-600">ID</th>
+        {{range .Columns}}
+        <th class="text-left px-4 py-3 font-semibold text-slate-600">{{.Label}}</th>
+        {{end}}
+        <th class="text-right px-4 py-3 font-semibold text-slate-600">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="admin-table-body" class="divide-y divide-slate-100">
+      <tr><td colspan="10" class="px-4 py-6 text-slate-500">Загрузка…</td></tr>
+    </tbody>
+  </table>
+</div>
+<script>
+  document.body.dataset.modelSlug = "{{.Model.Slug}}";
+  document.body.dataset.apiPath = "{{.Model.APIPath}}";
+  document.body.dataset.columns = '{{range $i, $c := .Columns}}{{if $i}},{{end}}{{$c.Key}}{{end}}';
+  document.body.dataset.pageMode = "list";
+</script>
+{{end}}

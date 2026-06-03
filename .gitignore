@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+uploads/
+bin/
+*.exe
+.DS_Store
+*.pem
+*.key
+*.p12
+docker-compose.override.yml
+.idea/
+.vscode/
+*.log
+coverage.out

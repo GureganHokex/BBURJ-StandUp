@@ -1,0 +1,33 @@
+{{define "public/merch_content"}}
+<div class="page-hero">
+  <h1>МЕРЧ</h1>
+  <p class="page-hero-sub">Футболки, стикеры и прочее — поддержи комика</p>
+</div>
+<div class="page-body">
+  {{if .Merch}}
+  <div class="merch-grid">
+    {{range .Merch}}
+    <article class="merch-card">
+      {{if .ImageURL}}
+      <img src="{{.ImageURL}}" alt="{{.Title}}" loading="lazy">
+      {{else}}
+      <div class="merch-card-placeholder">Нет фото</div>
+      {{end}}
+      <div class="merch-card-body">
+        <h2 class="merch-card-title">{{.Title}}</h2>
+        {{if .Description}}<p class="merch-card-desc">{{.Description}}</p>{{end}}
+        <p class="merch-price">{{formatPrice .Price}}</p>
+        {{if .BuyURL}}
+        <a href="{{.BuyURL}}" target="_blank" rel="noopener" class="btn-gold merch-card-buy">КУПИТЬ</a>
+        {{else}}
+        <span class="btn-outline merch-card-buy" style="opacity:0.5;pointer-events:none">СКОРО</span>
+        {{end}}
+      </div>
+    </article>
+    {{end}}
+  </div>
+  {{else}}
+  <p class="section-empty">Мерч скоро в продаже. Добавьте товары в админке → Merch.</p>
+  {{end}}
+</div>
+{{end}}

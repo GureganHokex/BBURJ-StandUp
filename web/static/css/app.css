@@ -1,0 +1,9 @@
+/* Admin & public tweaks on top of Tailwind CDN */
+.btn-primary {
+  @apply px-4 py-2 bg-slate-900 text-white rounded text-sm font-medium;
+}
+
+.admin-row-actions a,
+.admin-row-actions button {
+  margin-left: 0.5rem;
+}

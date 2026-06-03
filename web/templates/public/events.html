@@ -1,0 +1,28 @@
+{{define "public/events_content"}}
+<div class="page-hero">
+  <h1>АФИША</h1>
+</div>
+<div class="page-body">
+  {{if .Events}}
+  <div class="events-row">
+    {{range .Events}}
+    <article class="event-card">
+      <div class="event-card-bg"></div>
+      <div class="event-date-row">
+        <span class="event-day">{{formatEventDay .Date}}</span>
+        <span class="event-meta">{{formatEventMeta .Date}}</span>
+      </div>
+      <h3 class="event-city">{{upper .City}}</h3>
+      <p class="event-venue">{{.Title}}</p>
+      {{if .Description}}<p class="event-venue" style="margin-top:0.5rem">{{.Description}}</p>{{end}}
+      {{if .TicketURL}}
+      <a href="{{.TicketURL}}" target="_blank" rel="noopener" class="btn-outline">БИЛЕТЫ</a>
+      {{end}}
+    </article>
+    {{end}}
+  </div>
+  {{else}}
+  <p style="color:var(--text-muted)">Пока нет запланированных событий.</p>
+  {{end}}
+</div>
+{{end}}

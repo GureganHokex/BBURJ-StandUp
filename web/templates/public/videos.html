@@ -1,0 +1,22 @@
+{{define "public/videos_content"}}
+<div class="page-hero">
+  <h1>ВИДЕО</h1>
+</div>
+<div class="page-body">
+  {{if .Videos}}
+  <div style="display:grid;gap:2rem">
+    {{range .Videos}}
+    <article>
+      <div class="video-feature" style="max-height:none">
+        <iframe src="{{.EmbedURL}}" title="{{.Title}}" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <h2 style="font-family:var(--font-display);letter-spacing:0.06em;margin:1rem 0 0">{{.Title}}</h2>
+      <p style="color:var(--text-muted);font-size:0.8rem;text-transform:uppercase">{{.Platform}}</p>
+    </article>
+    {{end}}
+  </div>
+  {{else}}
+  <p style="color:var(--text-muted)">Видео пока не добавлены.</p>
+  {{end}}
+</div>
+{{end}}

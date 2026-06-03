@@ -1,0 +1,49 @@
+{{define "public/layout"}}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{if .PageTitle}}{{.PageTitle}}{{else}}{{.Title}}{{end}} — Большой Буржинский</title>
+  <link rel="stylesheet" href="/static/css/public.css">
+</head>
+<body class="site">
+  <header class="site-header" id="site-top">
+    <a href="/" class="site-logo">БОЛЬШОЙ<br>БУРЖИНСКИЙ</a>
+    <nav class="site-nav" id="site-nav" aria-label="Основное меню">
+      <div class="site-nav-head">
+        <span class="site-nav-title">МЕНЮ</span>
+        <button type="button" class="site-nav-close" aria-label="Закрыть меню">×</button>
+      </div>
+      <div class="site-nav-links">
+        <a href="/events" class="{{if eq .Active "events"}}active{{end}}">АФИША</a>
+        <a href="/videos" class="{{if eq .Active "videos"}}active{{end}}">ВИДЕО</a>
+        <a href="/#about" class="{{if eq .Active "about"}}active{{end}}">ОБО МНЕ</a>
+        <a href="/photos" class="{{if eq .Active "photos"}}active{{end}}">ФОТО</a>
+        <a href="/merch" class="{{if eq .Active "merch"}}active{{end}}">МЕРЧ</a>
+        <a href="/#contacts" class="{{if eq .Active "contacts"}}active{{end}}">КОНТАКТЫ</a>
+      </div>
+    </nav>
+    <div class="site-socials">
+      <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" title="YouTube">YT</a>
+      <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" title="Telegram">TG</a>
+      <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" title="Instagram">IG</a>
+    </div>
+    <button type="button" class="site-menu-btn" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
+      <span class="site-menu-icon" aria-hidden="true"></span>
+    </button>
+  </header>
+  <div class="site-nav-backdrop" id="site-nav-backdrop" hidden></div>
+
+  {{.ContentHTML}}
+
+  <footer class="site-footer" id="contacts">
+    <span>© Большой Буржинский, 2026</span>
+    <span>Дизайн и разработка — BURJ PROJ</span>
+  </footer>
+  {{template "public/lightbox" .}}
+  <script src="/static/js/public.js" defer></script>
+  <script src="/static/js/lightbox.js" defer></script>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,161 @@
+{{define "public/home_content"}}
+<section class="hero">
+  <div class="hero-bg"{{if .Settings.HeroImageURL}} style="background-image: linear-gradient(105deg, rgba(10,10,11,0.88) 0%, rgba(10,10,11,0.5) 50%, rgba(10,10,11,0.8) 100%), url('{{.Settings.HeroImageURL}}'); background-size: cover; background-position: center top;"{{end}}></div>
+  <div class="hero-boat"><span class="hero-boat-icon" aria-hidden="true">⛵</span> САДИСЬ В МОЮ ЛОДОЧКУ,<br>В НЕЙ ВЕСЕЛО И УЮТНО<br>ВСЕГДА!</div>
+  <div class="hero-inner">
+    <p class="hero-tag">{{.Settings.HeroTagline}}</p>
+    <h1 class="hero-title">БОЛЬШОЙ<br>БУРЖИНСКИЙ</h1>
+    <a href="/videos" class="btn-gold">СМОТРЕТЬ ВИДЕО →</a>
+  </div>
+</section>
+
+<section class="section" id="afisha">
+  <div class="section-head">
+    <h2 class="section-title">АФИША</h2>
+    <a href="/events" class="section-link">СМОТРЕТЬ ВСЕ →</a>
+  </div>
+  {{if .Events}}
+  <div class="events-row">
+    {{range .Events}}
+    <article class="event-card">
+      <div class="event-card-bg"></div>
+      <div class="event-date-row">
+        <span class="event-day">{{formatEventDay .Date}}</span>
+        <span class="event-meta">{{formatEventMeta .Date}}</span>
+      </div>
+      <h3 class="event-city">{{upper .City}}</h3>
+      <p class="event-venue">{{.Title}}</p>
+      {{if .TicketURL}}
+      <a href="{{.TicketURL}}" target="_blank" rel="noopener" class="btn-outline">БИЛЕТЫ</a>
+      {{else}}
+      <span class="btn-outline" style="opacity:0.5;pointer-events:none">СКОРО</span>
+      {{end}}
+    </article>
+    {{end}}
+  </div>
+  {{else}}
+  <p style="color:var(--text-muted)">Скоро новые даты — следи за афишей.</p>
+  {{end}}
+</section>
+
+<section class="section section-duo">
+  <div class="duo-col duo-video" id="video">
+    <div class="section-head">
+      <h2 class="section-title">ВИДЕО</h2>
+      <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="section-link section-link--gold">СМОТРЕТЬ НА YOUTUBE →</a>
+    </div>
+    <div class="video-frame-worn">
+      {{if .FeaturedVideo}}
+      <div class="video-feature">
+        <iframe src="{{.FeaturedVideo.EmbedURL}}" title="{{.FeaturedVideo.Title}}" allowfullscreen loading="lazy"></iframe>
+      </div>
+      {{else}}
+      <div class="video-feature">
+        <div class="video-placeholder">Добавь видео в админке</div>
+        <div class="video-play-overlay"><span>▶</span></div>
+      </div>
+      {{end}}
+    </div>
+  </div>
+  <div class="duo-col duo-about" id="about">
+    <h2 class="section-title">ОБО МНЕ</h2>
+    <div class="about-inner">
+      <div class="about-text">
+        <p>{{.Settings.AboutText}}</p>
+        {{if .Settings.AboutExtra}}<p>{{.Settings.AboutExtra}}</p>{{end}}
+        <a href="/events" class="link-gold">ЧИТАТЬ ДАЛЬШЕ →</a>
+      </div>
+      <div class="photo-taped">
+        {{if .Settings.PortraitImageURL}}
+        <img src="{{.Settings.PortraitImageURL}}" alt="Большой Буржинский" class="photo-taped-img">
+        {{else}}
+        <div class="photo-taped-inner">ФОТО КОМИКА</div>
+        {{end}}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="merch">
+  <div class="section-head">
+    <h2 class="section-title">МЕРЧ</h2>
+    <a href="/merch" class="section-link">СМОТРЕТЬ ВСЕ →</a>
+  </div>
+  {{if .Merch}}
+  <div class="merch-grid">
+    {{range .Merch}}
+    <article class="merch-card">
+      {{if .ImageURL}}
+      <a href="/merch" class="merch-card-image-link">
+        <img src="{{.ImageURL}}" alt="{{.Title}}" loading="lazy">
+      </a>
+      {{else}}
+      <div class="merch-card-placeholder">Нет фото</div>
+      {{end}}
+      <div class="merch-card-body">
+        <h3 class="merch-card-title">{{.Title}}</h3>
+        {{if .Description}}<p class="merch-card-desc">{{.Description}}</p>{{end}}
+        <p class="merch-price">{{formatPrice .Price}}</p>
+        {{if .BuyURL}}
+        <a href="{{.BuyURL}}" target="_blank" rel="noopener" class="btn-gold merch-card-buy">КУПИТЬ</a>
+        {{end}}
+      </div>
+    </article>
+    {{end}}
+  </div>
+  {{else}}
+  <p class="section-empty">Мерч скоро в продаже — загляни позже.</p>
+  {{end}}
+</section>
+
+<section class="section" id="photos">
+  <div class="section-head">
+    <h2 class="section-title">ФОТО</h2>
+    <a href="/photos" class="section-link">СМОТРЕТЬ ВСЕ →</a>
+  </div>
+  {{if .Photos}}
+  <div class="film-strip photo-gallery" data-lightbox-gallery>
+    {{range .Photos}}
+    <button type="button" class="photo-thumb film-frame-photo" style="background-image:url('{{.ImageURL}}')"
+      data-lightbox-src="{{.ImageURL}}" data-lightbox-caption="{{.Title}}"
+      aria-label="Открыть фото{{if .Title}}: {{.Title}}{{end}}">
+      <span class="photo-thumb-icon" aria-hidden="true">+</span>
+    </button>
+    {{end}}
+  </div>
+  {{else}}
+  <div class="film-strip">
+    <div class="film-frame"></div>
+    <div class="film-frame"></div>
+    <div class="film-frame"></div>
+  </div>
+  <p style="color:var(--text-muted);margin-top:1rem;font-size:0.9rem">Загрузите фото в админке → Photos</p>
+  {{end}}
+</section>
+
+<section class="social-cta">
+  <div class="social-cta-inner">
+    <h2 class="social-cta-title">ПОДПИСЫВАЙСЯ<br>НА МОИ СОЦСЕТИ →</h2>
+    <div class="social-grid">
+      <div class="social-card">
+        <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="social-card-icon" title="YouTube">YT</a>
+        <h3>YOUTUBE</h3>
+        <p>{{.Settings.YouTubeHandle}}</p>
+        <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="btn-outline">ПЕРЕЙТИ</a>
+      </div>
+      <div class="social-card">
+        <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="social-card-icon" title="Telegram">TG</a>
+        <h3>TELEGRAM</h3>
+        <p>{{.Settings.TelegramHandle}}</p>
+        <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="btn-outline">ПЕРЕЙТИ</a>
+      </div>
+      <div class="social-card">
+        <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="social-card-icon" title="Instagram">IG</a>
+        <h3>INSTAGRAM</h3>
+        <p>{{.Settings.InstagramHandle}}</p>
+        <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="btn-outline">ПЕРЕЙТИ</a>
+      </div>
+    </div>
+  </div>
+</section>
+{{end}}

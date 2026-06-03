@@ -1,0 +1,20 @@
+{{define "public/photos_content"}}
+<div class="page-hero">
+  <h1>ФОТО</h1>
+</div>
+<div class="page-body">
+  {{if .Photos}}
+  <div class="photo-gallery photo-gallery--grid" data-lightbox-gallery>
+    {{range .Photos}}
+    <button type="button" class="photo-thumb" style="background-image:url('{{.ImageURL}}')"
+      data-lightbox-src="{{.ImageURL}}" data-lightbox-caption="{{.Title}}"
+      aria-label="Открыть фото{{if .Title}}: {{.Title}}{{end}}">
+      <span class="photo-thumb-icon" aria-hidden="true">+</span>
+    </button>
+    {{end}}
+  </div>
+  {{else}}
+  <p style="color:var(--text-muted)">Добавьте фото в админке → Photos.</p>
+  {{end}}
+</div>
+{{end}}

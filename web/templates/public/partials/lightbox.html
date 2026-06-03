@@ -1,0 +1,12 @@
+{{define "public/lightbox"}}
+<div id="photo-lightbox" class="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Просмотр фото">
+  <div class="lightbox-backdrop"></div>
+  <button type="button" class="lightbox-close" aria-label="Закрыть">×</button>
+  <button type="button" class="lightbox-prev" aria-label="Предыдущее" hidden>‹</button>
+  <button type="button" class="lightbox-next" aria-label="Следующее" hidden>›</button>
+  <figure class="lightbox-figure">
+    <img class="lightbox-image" src="" alt="">
+    <figcaption class="lightbox-caption" hidden></figcaption>
+  </figure>
+</div>
+{{end}}

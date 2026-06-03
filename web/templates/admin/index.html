@@ -1,0 +1,11 @@
+{{define "admin/index_content"}}
+<div class="grid gap-4 sm:grid-cols-3">
+  {{range .Cards}}
+  <a href="{{.ListPath}}" class="block bg-white rounded-lg border border-slate-200 p-6 hover:border-slate-400 transition">
+    <h2 class="text-lg font-semibold text-slate-900">{{.Name}}</h2>
+    <p class="text-3xl font-bold text-slate-700 mt-2">{{.Count}}</p>
+    <p class="text-sm text-slate-500 mt-1">записей</p>
+  </a>
+  {{end}}
+</div>
+{{end}}
