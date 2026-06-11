@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Первичная настройка Ubuntu 22.04 на Yandex Cloud. Запуск: sudo bash scripts/yc-bootstrap.sh
+# Первичная настройка Ubuntu 22.04/24.04 (VPS / Yandex Cloud). Запуск: sudo bash scripts/yc-bootstrap.sh
 set -euo pipefail
 
 if [[ "${EUID}" -ne 0 ]]; then
