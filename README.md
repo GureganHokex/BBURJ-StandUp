@@ -24,6 +24,19 @@ docker compose up --build
 
 См. [SECURITY.md](SECURITY.md).
 
+### Yandex Cloud (бюджет ~3 200–3 500 ₽/мес)
+
+Один сервер: приложение + PostgreSQL + Caddy (HTTPS). Без Render.
+
+1. VM в YC: **2 vCPU, 4 GB RAM, 40 GB network-ssd**, Ubuntu 22.04, `ru-central1-a`.
+2. Security Group: вход **22** (только ваш IP), **80**, **443**.
+3. На VM: `sudo bash scripts/yc-bootstrap.sh`
+4. `cp .env.yc.example .env`, заполните секреты и `DOMAIN`.
+5. `docker compose -f docker-compose.yc.yml --env-file .env up -d --build`
+6. DNS: A-запись домена → публичный IP VM.
+
+### Docker Compose (свой сервер / VPS)
+
 1. Скопируйте `docker-compose.prod.yml.example` → `docker-compose.prod.yml`.
 2. Создайте `.env` с сильными секретами (`openssl rand -hex 32` для `SESSION_SECRET`).
 3. Установите `APP_ENV=production`, `SECURE_COOKIES=true`, `DATABASE_URL` с `sslmode=require`.
