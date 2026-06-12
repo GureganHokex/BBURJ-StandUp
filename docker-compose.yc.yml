@@ -25,7 +25,9 @@ services:
       - "5432"
 
   app:
-    build: .
+    build:
+      context: .
+      network: host
     restart: unless-stopped
     expose:
       - "8080"
