@@ -1,3 +1,14 @@
+# TLS 1.2 only — workaround for partial HTTPS blocks on RU networks (AdminVPS KB #559).
+# Re-enable tls1.3 when routing stabilizes. HTTP/3 (QUIC) disabled via compose ports.
+{
+	servers :443 {
+		protocols h1 h2
+	}
+}
+
 {$DOMAIN} {
+	tls {
+		protocols tls1.2
+	}
 	reverse_proxy app:8080
 }

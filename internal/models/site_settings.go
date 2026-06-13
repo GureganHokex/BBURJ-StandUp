@@ -9,10 +9,10 @@ type SiteSettings struct {
 	HeroTagline       string    `gorm:"size:255" json:"hero_tagline"`
 	AboutText         string    `gorm:"type:text" json:"about_text"`
 	AboutExtra        string    `gorm:"type:text" json:"about_extra"`
-	YouTubeURL        string    `gorm:"size:512" json:"youtube_url"`
+	YouTubeURL        string    `gorm:"column:youtube_url;size:512" json:"youtube_url"`
 	TelegramURL       string    `gorm:"size:512" json:"telegram_url"`
 	InstagramURL      string    `gorm:"size:512" json:"instagram_url"`
-	YouTubeHandle     string    `gorm:"size:128" json:"youtube_handle"`
+	YouTubeHandle     string    `gorm:"column:youtube_handle;size:128" json:"youtube_handle"`
 	TelegramHandle    string    `gorm:"size:128" json:"telegram_handle"`
 	InstagramHandle   string    `gorm:"size:128" json:"instagram_handle"`
 	CreatedAt         time.Time `json:"created_at"`

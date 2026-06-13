@@ -55,7 +55,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "443:443/udp"
+      # No 443/udp — HTTP/3 (QUIC) can worsen reachability on RU networks (AdminVPS KB #559).
     environment:
       DOMAIN: ${DOMAIN}
     volumes:
