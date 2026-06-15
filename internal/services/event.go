@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/burj/comic/internal/models"
@@ -9,12 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
+var ErrDuplicateExternalEvent = errors.New("event already imported")
+
 type EventInput struct {
-	Title       string
-	Date        time.Time
-	City        string
-	Description string
-	TicketURL   string
+	Title        string
+	Date         time.Time
+	City         string
+	Description  string
+	TicketURL    string
+	TicketSource string
+	ExternalID   string
 }
 
 type EventService struct {
@@ -40,17 +45,27 @@ func (s *EventService) Count() (int64, error) {
 	return s.repo.Count()
 }
 
+func (s *EventService) ExternalIDs(source string) (map[string]struct{}, error) {
+	return s.repo.ExternalIDs(source)
+}
+
 func (s *EventService) Create(input EventInput) (*models.Event, FieldErrors, error) {
 	if errs := s.validate(input); errs.HasErrors() {
 		return nil, errs, nil
 	}
+	if err := s.ensureNotDuplicate(input); err != nil {
+		return nil, nil, err
+	}
 
+	source := normalizeTicketSource(input.TicketSource)
 	event := &models.Event{
-		Title:       input.Title,
-		Date:        input.Date,
-		City:        input.City,
-		Description: input.Description,
-		TicketURL:   input.TicketURL,
+		Title:        input.Title,
+		Date:         input.Date,
+		City:         input.City,
+		Description:  input.Description,
+		TicketURL:    input.TicketURL,
+		TicketSource: source,
+		ExternalID:   stringsTrimExternal(input.ExternalID, source),
 	}
 	if err := s.repo.Create(event); err != nil {
 		return nil, nil, err
@@ -71,11 +86,21 @@ func (s *EventService) Update(id uint, input EventInput) (*models.Event, FieldEr
 		return nil, nil, err
 	}
 
+	source := normalizeTicketSource(input.TicketSource)
+	externalID := stringsTrimExternal(input.ExternalID, source)
+	if source != event.TicketSource || externalID != event.ExternalID {
+		if err := s.ensureNotDuplicateExcept(input, id); err != nil {
+			return nil, nil, err
+		}
+	}
+
 	event.Title = input.Title
 	event.Date = input.Date
 	event.City = input.City
 	event.Description = input.Description
 	event.TicketURL = input.TicketURL
+	event.TicketSource = source
+	event.ExternalID = externalID
 
 	if err := s.repo.Update(event); err != nil {
 		return nil, nil, err
@@ -96,4 +121,53 @@ func (s *EventService) validate(input EventInput) FieldErrors {
 		errs["date"] = "required"
 	}
 	return mergeErrors(errs, validateOptionalURL("ticket_url", input.TicketURL))
+}
+
+func (s *EventService) ensureNotDuplicate(input EventInput) error {
+	source := normalizeTicketSource(input.TicketSource)
+	externalID := stringsTrimExternal(input.ExternalID, source)
+	if externalID == "" {
+		return nil
+	}
+	_, err := s.repo.FindByExternal(source, externalID)
+	if err == nil {
+		return ErrDuplicateExternalEvent
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil
+	}
+	return err
+}
+
+func (s *EventService) ensureNotDuplicateExcept(input EventInput, id uint) error {
+	source := normalizeTicketSource(input.TicketSource)
+	externalID := stringsTrimExternal(input.ExternalID, source)
+	if externalID == "" {
+		return nil
+	}
+	existing, err := s.repo.FindByExternal(source, externalID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return err
+	}
+	if existing.ID != id {
+		return ErrDuplicateExternalEvent
+	}
+	return nil
+}
+
+func normalizeTicketSource(source string) string {
+	if source == "" {
+		return "manual"
+	}
+	return source
+}
+
+func stringsTrimExternal(id, source string) string {
+	if source == "" || source == "manual" {
+		return ""
+	}
+	return strings.TrimSpace(id)
 }

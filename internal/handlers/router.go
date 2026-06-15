@@ -14,6 +14,7 @@ import (
 	"github.com/burj/comic/internal/render"
 	"github.com/burj/comic/internal/services"
 	"github.com/burj/comic/internal/storage"
+	"github.com/burj/comic/internal/tickets"
 	"github.com/gin-gonic/gin"
 )
 
@@ -120,6 +121,7 @@ func NewRouter(deps Deps) *gin.Engine {
 		settingsAPI := api.NewSettingsHandler(deps.Settings)
 		accountAPI := api.NewAccountHandler(deps.Auth)
 		uploadAPI := api.NewUploadHandler(deps.Uploader)
+		ticketCatalogAPI := api.NewTicketCatalogHandler(tickets.NewCatalog(), deps.Settings, deps.Events)
 
 		mutating := apiGroup.Group("")
 		mutating.Use(csrf.Protect())
@@ -153,6 +155,8 @@ func NewRouter(deps Deps) *gin.Engine {
 		apiGroup.GET("/photos", photoAPI.List)
 		apiGroup.GET("/photos/:id", photoAPI.Get)
 		apiGroup.GET("/settings", settingsAPI.Get)
+		apiGroup.GET("/ticket-catalog/providers", ticketCatalogAPI.Providers)
+		apiGroup.GET("/ticket-catalog/:source/events", ticketCatalogAPI.Events)
 	}
 
 	return r

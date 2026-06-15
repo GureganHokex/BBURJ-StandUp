@@ -1,0 +1,49 @@
+{{define "admin/event_form_content"}}
+<div id="admin-page"
+  data-page-mode="event-form"
+  data-model-slug="{{.Model.Slug}}"
+  data-api-path="{{.Model.APIPath}}"
+  data-record-id="{{.ID}}">
+<div class="max-w-2xl space-y-4">
+  <div class="bg-white rounded-lg border border-slate-200 p-6">
+    <h2 class="text-sm font-semibold text-slate-900 mb-2">Импорт из агрегатора билетов</h2>
+    <p class="text-sm text-slate-600 mb-4">Выберите агрегатор, загрузите список и кликните на событие — поля заполнятся автоматически. Ссылка «Билеты» ведёт на покупку на стороне агрегатора.</p>
+    <div class="flex flex-wrap gap-3 items-end mb-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Агрегатор</label>
+        <select id="ticket-source-select" class="border border-slate-300 rounded px-3 py-2 text-sm min-w-[180px]">
+          <option value="">Загрузка…</option>
+        </select>
+      </div>
+      <button type="button" id="ticket-source-load" class="px-4 py-2 bg-slate-800 text-white text-sm rounded hover:bg-slate-700">Обновить список</button>
+    </div>
+    <div id="ticket-source-status" class="text-sm text-slate-500 mb-2"></div>
+    <div id="ticket-source-list" class="max-h-64 overflow-y-auto border border-slate-200 rounded divide-y divide-slate-100"></div>
+  </div>
+
+  <div class="bg-white rounded-lg border border-slate-200 p-6">
+    <div id="form-errors" class="mb-4 hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3"></div>
+    <form id="admin-form" class="space-y-4">
+      <input type="hidden" name="ticket_source" value="manual">
+      <input type="hidden" name="external_id" value="">
+      {{range .Fields}}
+      <div class="form-field" data-field-type="{{.Type}}" data-field-name="{{.Name}}">
+        <label class="block text-sm font-medium text-slate-700 mb-1">
+          {{.Label}}{{if .Required}} <span class="text-red-600">*</span>{{end}}
+        </label>
+        {{if eq .Type "textarea"}}
+        <textarea name="{{.Name}}" rows="4" class="w-full border border-slate-300 rounded px-3 py-2"></textarea>
+        {{else}}
+        <input name="{{.Name}}" type="{{.Type}}" {{if .Required}}required{{end}} class="w-full border border-slate-300 rounded px-3 py-2">
+        {{end}}
+      </div>
+      {{end}}
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded hover:bg-slate-800">Сохранить</button>
+        <a href="/admin/{{.Model.Slug}}" class="px-4 py-2 border border-slate-300 text-sm rounded hover:bg-slate-50">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+</div>
+{{end}}

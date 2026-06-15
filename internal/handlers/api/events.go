@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/burj/comic/internal/services"
@@ -54,6 +55,10 @@ func (h *EventHandler) Create(c *gin.Context) {
 	}
 	event, errs, err := h.service.Create(input)
 	if err != nil {
+		if errors.Is(err, services.ErrDuplicateExternalEvent) {
+			c.JSON(http.StatusConflict, ErrorResponse{Error: "event already imported from this aggregator"})
+			return
+		}
 		writeInternalError(c, appConfig(c), err)
 		return
 	}
@@ -84,6 +89,10 @@ func (h *EventHandler) Update(c *gin.Context) {
 		return
 	}
 	if err != nil {
+		if errors.Is(err, services.ErrDuplicateExternalEvent) {
+			c.JSON(http.StatusConflict, ErrorResponse{Error: "event already imported from this aggregator"})
+			return
+		}
 		writeInternalError(c, appConfig(c), err)
 		return
 	}
@@ -112,11 +121,13 @@ func toEventInput(req EventRequest) (services.EventInput, error) {
 		return services.EventInput{}, err
 	}
 	return services.EventInput{
-		Title:       req.Title,
-		Date:        date,
-		City:        req.City,
-		Description: req.Description,
-		TicketURL:   req.TicketURL,
+		Title:        req.Title,
+		Date:         date,
+		City:         req.City,
+		Description:  req.Description,
+		TicketURL:    req.TicketURL,
+		TicketSource: req.TicketSource,
+		ExternalID:   req.ExternalID,
 	}, nil
 }
 

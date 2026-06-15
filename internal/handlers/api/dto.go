@@ -19,11 +19,13 @@ type ErrorResponse struct {
 }
 
 type EventRequest struct {
-	Title       string `json:"title"`
-	Date        string `json:"date"`
-	City        string `json:"city"`
-	Description string `json:"description"`
-	TicketURL   string `json:"ticket_url"`
+	Title        string `json:"title"`
+	Date         string `json:"date"`
+	City         string `json:"city"`
+	Description  string `json:"description"`
+	TicketURL    string `json:"ticket_url"`
+	TicketSource string `json:"ticket_source"`
+	ExternalID   string `json:"external_id"`
 }
 
 type VideoRequest struct {

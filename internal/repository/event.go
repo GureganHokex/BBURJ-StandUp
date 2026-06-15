@@ -52,6 +52,33 @@ func (r *EventRepository) Delete(id uint) error {
 	return r.db.Delete(&models.Event{}, id).Error
 }
 
+func (r *EventRepository) FindByExternal(source, externalID string) (*models.Event, error) {
+	var event models.Event
+	err := r.db.Where("ticket_source = ? AND external_id = ?", source, externalID).First(&event).Error
+	if err != nil {
+		return nil, err
+	}
+	return &event, nil
+}
+
+func (r *EventRepository) ExternalIDs(source string) (map[string]struct{}, error) {
+	var rows []struct {
+		ExternalID string
+	}
+	err := r.db.Model(&models.Event{}).
+		Select("external_id").
+		Where("ticket_source = ? AND external_id <> ''", source).
+		Find(&rows).Error
+	if err != nil {
+		return nil, err
+	}
+	out := make(map[string]struct{}, len(rows))
+	for _, row := range rows {
+		out[row.ExternalID] = struct{}{}
+	}
+	return out, nil
+}
+
 func (r *EventRepository) Count() (int64, error) {
 	var count int64
 	err := r.db.Model(&models.Event{}).Count(&count).Error

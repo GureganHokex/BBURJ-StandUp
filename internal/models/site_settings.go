@@ -15,6 +15,11 @@ type SiteSettings struct {
 	YouTubeHandle     string    `gorm:"column:youtube_handle;size:128" json:"youtube_handle"`
 	TelegramHandle    string    `gorm:"size:128" json:"telegram_handle"`
 	InstagramHandle   string    `gorm:"size:128" json:"instagram_handle"`
+	TimepadOrgID          string `gorm:"column:timepad_org_id;size:32" json:"timepad_org_id"`
+	TimepadAPIKey         string `gorm:"column:timepad_api_key;size:255" json:"-"`
+	TicketscloudOrgID     string `gorm:"column:ticketscloud_org_id;size:128" json:"ticketscloud_org_id"`
+	TicketscloudAPIKey    string `gorm:"column:ticketscloud_api_key;size:255" json:"-"`
+	EventImportKeywords   string `gorm:"column:event_import_keywords;size:512" json:"event_import_keywords"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 }

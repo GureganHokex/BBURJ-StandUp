@@ -8,7 +8,9 @@ type Event struct {
 	Date        time.Time `gorm:"not null;index" json:"date"`
 	City        string    `gorm:"size:128;not null" json:"city"`
 	Description string    `gorm:"type:text" json:"description"`
-	TicketURL   string    `gorm:"size:512" json:"ticket_url"`
-	CreatedAt   time.Time `json:"created_at"`
+	TicketURL    string    `gorm:"size:512" json:"ticket_url"`
+	TicketSource string    `gorm:"size:32;not null;default:manual" json:"ticket_source"`
+	ExternalID   string    `gorm:"size:128;not null;default:''" json:"external_id"`
+	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

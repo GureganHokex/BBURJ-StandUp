@@ -161,6 +161,10 @@
         let val = row[key];
         if (key === 'date' && val) val = new Date(val).toLocaleString('ru-RU');
         if (key === 'price' && val != null) val = formatKopecksDisplay(val);
+        if (key === 'ticket_source' && val) {
+          const labels = { manual: 'вручную', timepad: 'Timepad', ticketscloud: 'TicketsCloud' };
+          val = labels[val] || val;
+        }
         if (key === 'image_url' && val) {
           return `<td class="px-4 py-3"><img src="${escapeHtml(String(val))}" alt="" class="h-10 w-10 object-cover rounded border"></td>`;
         }
@@ -230,6 +234,9 @@
   const form = document.getElementById('admin-form');
   if (form && pageData.apiPath && pageData.pageMode !== 'settings' && pageData.pageMode !== 'account') {
     const recordId = parseInt(pageData.recordId || '0', 10);
+    if (pageData.pageMode === 'event-form') {
+      initTicketImporter(form);
+    }
     if (recordId > 0) {
       fetch(`${pageData.apiPath}/${recordId}`, {
         headers: apiHeaders(false),
@@ -249,6 +256,14 @@
             }
             if (val != null) el.value = val;
           });
+          if (data.ticket_source) {
+            const src = form.querySelector('[name="ticket_source"]');
+            if (src) src.value = data.ticket_source;
+          }
+          if (data.external_id) {
+            const ext = form.querySelector('[name="external_id"]');
+            if (ext) ext.value = data.external_id;
+          }
           initDropzones(form);
         });
     } else {
@@ -274,6 +289,10 @@
         }
         body[el.name] = v;
       }
+      const srcEl = form.querySelector('[name="ticket_source"]');
+      const extEl = form.querySelector('[name="external_id"]');
+      if (srcEl) body.ticket_source = srcEl.value || 'manual';
+      if (extEl) body.external_id = extEl.value || '';
       const method = recordId > 0 ? 'PUT' : 'POST';
       const url = recordId > 0 ? `${pageData.apiPath}/${recordId}` : pageData.apiPath;
       fetch(url, {
@@ -293,6 +312,89 @@
           window.location.href = `/admin/${pageData.modelSlug}`;
         });
     });
+  }
+
+  function initTicketImporter(form) {
+    const select = document.getElementById('ticket-source-select');
+    const loadBtn = document.getElementById('ticket-source-load');
+    const list = document.getElementById('ticket-source-list');
+    const status = document.getElementById('ticket-source-status');
+    if (!select || !loadBtn || !list) return;
+
+    fetch('/api/ticket-catalog/providers', { headers: apiHeaders(false), credentials: 'same-origin' })
+      .then((r) => r.json())
+      .then((payload) => {
+        const providers = (payload.data || []).filter((p) => p.configured);
+        select.innerHTML = providers.length
+          ? providers.map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join('')
+          : '<option value="">Сначала настройте агрегатор в Settings</option>';
+        if (providers.length) loadTicketEvents();
+      })
+      .catch(() => {
+        select.innerHTML = '<option value="">Ошибка загрузки</option>';
+      });
+
+    let cachedItems = [];
+
+    loadBtn.addEventListener('click', loadTicketEvents);
+
+    function loadTicketEvents() {
+      const source = select.value;
+      if (!source) return;
+      status.textContent = 'Загрузка…';
+      list.innerHTML = '';
+      fetch(`/api/ticket-catalog/${encodeURIComponent(source)}/events`, {
+        headers: apiHeaders(false),
+        credentials: 'same-origin',
+      })
+        .then(async (r) => {
+          const payload = await r.json().catch(() => ({}));
+          if (!r.ok) {
+            status.textContent = payload.error || 'Не удалось загрузить события';
+            return;
+          }
+          cachedItems = payload.data || [];
+          status.textContent = cachedItems.length ? `Найдено: ${cachedItems.length}` : 'Событий не найдено';
+          list.innerHTML = cachedItems
+            .map((item, index) => {
+              const date = item.date ? new Date(item.date).toLocaleString('ru-RU') : '';
+              const added = item.already_added ? ' · уже в афише' : '';
+              return `<button type="button" class="ticket-pick w-full text-left px-3 py-2 hover:bg-slate-50 text-sm" data-index="${index}">
+              <div class="font-medium text-slate-900">${escapeHtml(item.title || '')}${added}</div>
+              <div class="text-slate-500 text-xs">${escapeHtml(date)} · ${escapeHtml(item.city || '')}</div>
+            </button>`;
+            })
+            .join('');
+        })
+        .catch(() => {
+          status.textContent = 'Не удалось загрузить события';
+        });
+    }
+
+    list.addEventListener('click', (e) => {
+      const btn = e.target.closest('.ticket-pick');
+      if (!btn) return;
+      const item = cachedItems[Number(btn.dataset.index)];
+      if (!item) return;
+      fillEventFromTicket(form, item);
+      status.textContent = 'Поля заполнены — проверьте и нажмите «Сохранить»';
+    });
+  }
+
+  function fillEventFromTicket(form, item) {
+    const set = (name, value) => {
+      const el = form.querySelector(`[name="${name}"]`);
+      if (el && value != null) el.value = value;
+    };
+    set('title', item.title || '');
+    set('city', item.city || '');
+    set('description', item.description || '');
+    set('ticket_url', item.ticket_url || '');
+    if (item.date) {
+      set('date', new Date(item.date).toISOString().slice(0, 16));
+    }
+    set('ticket_source', item.source || 'manual');
+    set('external_id', item.external_id || '');
   }
 
   const accountForm = document.getElementById('account-form');

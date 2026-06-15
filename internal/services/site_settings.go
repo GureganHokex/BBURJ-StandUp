@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/burj/comic/internal/models"
 	"github.com/burj/comic/internal/repository"
@@ -19,6 +20,11 @@ type SiteSettingsInput struct {
 	YouTubeHandle    string
 	TelegramHandle   string
 	InstagramHandle  string
+	TimepadOrgID          string
+	TimepadAPIKey         string
+	TicketscloudOrgID     string
+	TicketscloudAPIKey    string
+	EventImportKeywords   string
 }
 
 type SiteSettingsService struct {
@@ -69,6 +75,15 @@ func (s *SiteSettingsService) Update(input SiteSettingsInput) (*models.SiteSetti
 	current.YouTubeHandle = input.YouTubeHandle
 	current.TelegramHandle = input.TelegramHandle
 	current.InstagramHandle = input.InstagramHandle
+	current.TimepadOrgID = input.TimepadOrgID
+	current.TicketscloudOrgID = input.TicketscloudOrgID
+	current.EventImportKeywords = input.EventImportKeywords
+	if strings.TrimSpace(input.TimepadAPIKey) != "" {
+		current.TimepadAPIKey = input.TimepadAPIKey
+	}
+	if strings.TrimSpace(input.TicketscloudAPIKey) != "" {
+		current.TicketscloudAPIKey = input.TicketscloudAPIKey
+	}
 	if err := s.repo.Save(current); err != nil {
 		return nil, nil, err
 	}

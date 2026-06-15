@@ -27,6 +27,11 @@ type SettingsRequest struct {
 	YouTubeHandle    string `json:"youtube_handle"`
 	TelegramHandle   string `json:"telegram_handle"`
 	InstagramHandle  string `json:"instagram_handle"`
+	TimepadOrgID          string `json:"timepad_org_id"`
+	TimepadAPIKey         string `json:"timepad_api_key"`
+	TicketscloudOrgID     string `json:"ticketscloud_org_id"`
+	TicketscloudAPIKey    string `json:"ticketscloud_api_key"`
+	EventImportKeywords   string `json:"event_import_keywords"`
 }
 
 func (h *SettingsHandler) Get(c *gin.Context) {
@@ -50,6 +55,9 @@ func (h *SettingsHandler) Update(c *gin.Context) {
 		YouTubeURL: req.YouTubeURL, TelegramURL: req.TelegramURL, InstagramURL: req.InstagramURL,
 		YouTubeHandle: req.YouTubeHandle, TelegramHandle: req.TelegramHandle,
 		InstagramHandle: req.InstagramHandle,
+		TimepadOrgID: req.TimepadOrgID, TimepadAPIKey: req.TimepadAPIKey,
+		TicketscloudOrgID: req.TicketscloudOrgID, TicketscloudAPIKey: req.TicketscloudAPIKey,
+		EventImportKeywords: req.EventImportKeywords,
 	})
 	if err != nil {
 		writeInternalError(c, appConfig(c), err)

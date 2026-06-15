@@ -50,6 +50,7 @@ var modelColumns = map[string][]columnMeta{
 		{Key: "title", Label: "Название"},
 		{Key: "date", Label: "Дата"},
 		{Key: "city", Label: "Город"},
+		{Key: "ticket_source", Label: "Источник"},
 	},
 	"videos": {
 		{Key: "title", Label: "Название"},
@@ -127,7 +128,11 @@ func (h *PagesHandler) formPage(c *gin.Context, id uint) {
 	if id > 0 {
 		title = "Изменить " + model.Name
 	}
-	h.render.Page(c, 200, "admin/layout", "admin/form_content", gin.H{
+	contentTpl := "admin/form_content"
+	if slug == "events" {
+		contentTpl = "admin/event_form_content"
+	}
+	h.render.Page(c, 200, "admin/layout", contentTpl, gin.H{
 		"Title":  title,
 		"Model":  model,
 		"Fields": modelFields[slug],
