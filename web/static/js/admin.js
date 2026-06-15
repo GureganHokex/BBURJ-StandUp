@@ -288,6 +288,8 @@
           window.location.href = `/admin/${document.body.dataset.modelSlug}`;
         });
     });
+  }
+
   const accountForm = document.getElementById('account-form');
   if (accountForm && document.body.dataset.pageMode === 'account') {
     accountForm.addEventListener('submit', function (e) {
