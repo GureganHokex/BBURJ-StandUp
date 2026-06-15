@@ -1,46 +1,69 @@
-# Security
+# Безопасность
 
-## Secrets and GitHub
+Документ описывает требования к окружению, реализованные механизмы защиты и правила работы с секретами.
 
-- Never commit `.env`, keys, or database dumps.
-- Use GitHub **Secrets** for CI/CD (`SESSION_SECRET`, `DATABASE_URL`, etc.).
-- Rotate `SESSION_SECRET` if it may have leaked (all users will need to log in again).
+---
 
-## Production environment
+## Секреты и репозиторий
 
-| Variable | Requirement |
-|----------|-------------|
+- Не коммитьте `.env`, ключи, дампы базы и каталог `uploads/` с пользовательскими файлами.
+- Для CI/CD используйте секреты платформы (`SESSION_SECRET`, `DATABASE_URL` и т.д.).
+- При утечке `SESSION_SECRET` сгенерируйте новый — все активные сессии админки станут недействительны.
+
+---
+
+## Переменные окружения (production)
+
+| Переменная | Требование |
+|------------|------------|
 | `APP_ENV` | `production` |
-| `SESSION_SECRET` | ≥ 32 random characters, not the example value |
-| `ADMIN_PASSWORD` | ≥ 12 characters, not `admin123` (only used when DB has no admin user) |
-| `SECURE_COOKIES` | `true` (HTTPS) |
-| `DATABASE_URL` | `sslmode=require` or stricter |
-| `TRUSTED_PROXIES` | IP/CIDR of reverse proxy (nginx, Caddy) |
+| `SESSION_SECRET` | ≥ 32 случайных символов, не значение из примера |
+| `ADMIN_PASSWORD` | ≥ 12 символов, не `admin123` (используется только при первом создании админа в пустой БД) |
+| `SECURE_COOKIES` | `true` (сайт за HTTPS) |
+| `DATABASE_URL` | `sslmode=require` или строже |
+| `TRUSTED_PROXIES` | IP/CIDR reverse proxy (Caddy, nginx) |
 
-The app **refuses to start** if production config is unsafe.
+При небезопасной production-конфигурации приложение **отказывается стартовать**.
 
-## Deployment
+Примеры значений — в `.env.example` и `.env.yc.example`.
 
-1. Terminate TLS at nginx/Caddy; proxy to `app:8080`.
-2. Do not expose PostgreSQL port publicly.
-3. Persist `uploads/` volume and back it up with the database.
-4. Run migrations: automatic on start in production, or `go run ./cmd/migrate`.
+---
 
-## Implemented protections
+## Реализованные защиты
 
-- bcrypt passwords
-- HttpOnly session cookies, SameSite=Lax
-- Sessions stored in PostgreSQL (survive restarts)
-- CSRF on admin login and API mutations
-- Open redirect protection on post-login `next`
-- Rate limits: login (10 / 15 min per IP), uploads (60 / hour per IP)
-- Upload: size limit, MIME sniffing, random filenames
-- Security headers (strict CSP, X-Frame-Options, HSTS in production)
-- External URLs restricted to `http`/`https` schemes
-- Admin password change at `/admin/account`
-- API pagination cap (100)
-- Generic 500 errors in production (no stack traces to clients)
+**Аутентификация и сессии**
+- Пароли: bcrypt
+- Cookie-сессии: HttpOnly, SameSite=Lax; в production — Secure
+- Сессии хранятся в PostgreSQL (переживают перезапуск контейнера)
+- Смена пароля: `/admin/account`
 
-## Reporting issues
+**Запросы и API**
+- CSRF на вход в админку и на все мутирующие API-запросы
+- Защита от open redirect после логина (параметр `next`)
+- Rate limit: вход — 10 попыток / 15 мин на IP; загрузка — 60 / час на IP
+- Пагинация API ограничена (макс. 100 записей)
+- В production клиентам не отдаются stack trace при ошибке 500
 
-If you find a vulnerability, contact the maintainer privately before public disclosure.
+**Загрузка файлов**
+- Лимит размера (`MAX_UPLOAD_MB`)
+- Проверка MIME по содержимому
+- Случайные имена файлов
+
+**HTTP-заголовки**
+- CSP, X-Frame-Options, HSTS (в production) и другие security headers
+
+**Валидация данных**
+- Внешние URL только с протоколами `http` / `https`
+
+---
+
+## Хранение данных
+
+- PostgreSQL — основное хранилище контента и сессий.
+- Загруженные изображения — локальный каталог `uploads/` (volume в Docker). Резервное копирование БД и `uploads/` — ответственность оператора.
+
+---
+
+## Сообщить об уязвимости
+
+Если вы нашли уязвимость, свяжитесь с maintainer проекта **приватно** до публичного раскрытия.

@@ -1,94 +1,118 @@
-# Comic Site (Go + Gin + GORM)
+# Большой Буржинский — сайт комика
 
-Персональный сайт комика с публичной частью и админ-панелью в стиле Django Admin.
+Персональный сайт стендап-комика: публичная витрина и админ-панель для управления контентом.
 
-## Стек
+---
 
-- Go, Gin, GORM, PostgreSQL
-- HTML + Tailwind CSS (CDN) + HTMX
-- Cookie-сессии, bcrypt, CSRF
-- Docker Compose
+## Возможности
 
-## Быстрый старт (Docker, development)
+**Публичная часть**
+- Главная с афишей, блоком «Обо мне», видео, мерчем и фото
+- Страницы афиши, видео, фото и мерча
+- Модальное окно с подробностями события и ссылкой на покупку билетов
+- Lightbox для галереи фото
+- Адаптивная вёрстка под мобильные устройства
 
-```bash
-cp .env.example .env
-docker compose up --build
+**Админ-панель** (`/admin`)
+- Настройки сайта: тексты, соцсети, hero-изображение, портрет
+- CRUD для событий, видео, фото и мерча
+- Импорт афиши из билетных агрегаторов (TicketsCloud, Timepad)
+- Предпросмотр постера и карточки события по ссылке на билеты
+- Загрузка изображений drag-and-drop
+- Смена пароля администратора
+
+---
+
+## Стек технологий
+
+| Слой | Технологии |
+|------|------------|
+| Backend | Go 1.23, Gin, GORM |
+| База данных | PostgreSQL 16 |
+| Шаблоны | `html/template`, встроенные через `embed.FS` |
+| Публичный UI | HTML, CSS, vanilla JavaScript |
+| Админка | HTML, Tailwind CSS 3 (сборка при Docker build), vanilla JavaScript |
+| Безопасность | Cookie-сессии, bcrypt, CSRF, rate limiting |
+| Инфраструктура | Docker, Docker Compose, Caddy (HTTPS) |
+
+---
+
+## Структура репозитория
+
+```
+cmd/app/              — точка входа приложения
+internal/
+  config/             — конфигурация и валидация окружения
+  database/           — подключение к БД, миграции
+  handlers/           — HTTP: public, admin, api
+  middleware/         — auth, CSRF, security headers, rate limit
+  models/             — модели GORM
+  repository/         — слой доступа к данным
+  services/           — бизнес-логика
+  session/            — хранилище сессий
+  storage/            — загрузка файлов
+  tickets/            — клиенты билетных агрегаторов
+migrations/           — SQL-миграции (production)
+web/
+  templates/          — HTML-шаблоны (public + admin)
+  static/             — CSS, JS, изображения
+deploy/               — конфигурация Caddy
+scripts/              — вспомогательные скрипты
 ```
 
-- Публичный сайт: http://localhost:8080
-- Админка: http://localhost:8080/admin
-- Логин по умолчанию задаётся в `.env` (см. `.env.example`; только для dev)
-
-## Production и безопасность
-
-См. [SECURITY.md](SECURITY.md).
-
-### Yandex Cloud (бюджет ~3 200–3 500 ₽/мес)
-
-Один сервер: приложение + PostgreSQL + Caddy (HTTPS). Без Render.
-
-1. VM в YC: **2 vCPU, 4 GB RAM, 40 GB network-ssd**, Ubuntu 22.04, `ru-central1-a`.
-2. Security Group: вход **22** (только ваш IP), **80**, **443**.
-3. На VM: `sudo bash scripts/yc-bootstrap.sh`
-4. `cp .env.yc.example .env`, заполните секреты и `DOMAIN`.
-5. `docker compose -f docker-compose.yc.yml --env-file .env up -d --build`
-6. DNS: A-запись домена → публичный IP VM.
-
-### Docker Compose (свой сервер / VPS)
-
-1. Скопируйте `docker-compose.prod.yml.example` → `docker-compose.prod.yml`.
-2. Создайте `.env` с сильными секретами (`openssl rand -hex 32` для `SESSION_SECRET`).
-3. Установите `APP_ENV=production`, `SECURE_COOKIES=true`, `DATABASE_URL` с `sslmode=require`.
-4. Поставьте reverse proxy (HTTPS) и `TRUSTED_PROXIES` = IP прокси.
-5. Не коммитьте `.env` в GitHub.
-
-Миграции в production применяются при старте из `migrations/`. Вручную: `go run ./cmd/migrate`.
-
-## Локальный запуск (без Docker)
-
-1. Поднимите PostgreSQL и создайте БД `comic`.
-2. Скопируйте `.env.example` в `.env` и поправьте `DATABASE_URL`.
-3. Запустите:
-
-```bash
-go mod tidy
-go run ./cmd/app
-```
-
-## Структура
-
-- `cmd/app` — точка входа
-- `internal/models`, `repository`, `services` — домен и данные
-- `internal/handlers` — public, admin, api
-- `web/templates` — HTML шаблоны
-- `migrations/` — SQL-миграции
-
-## API (только для авторизованной админки)
-
-- `GET/POST /api/events`, `GET/PUT/DELETE /api/events/:id`
-- `GET/POST /api/videos`, `GET/PUT/DELETE /api/videos/:id`
-- `GET/POST /api/merch`, `GET/PUT/DELETE /api/merch/:id`
-
-Мутирующие запросы требуют cookie-сессию и заголовок `X-CSRF-Token`.
+---
 
 ## Публичные страницы
 
-- `/` — главная
-- `/events` — афиша
-- `/videos` — видео (iframe)
-- `/merch` — мерч
+| URL | Описание |
+|-----|----------|
+| `/` | Главная |
+| `/events` | Афиша выступлений |
+| `/videos` | Видео (YouTube, Rutube) |
+| `/photos` | Фото-галерея |
+| `/merch` | Мерч |
+
+---
 
 ## Админка
 
-- `/admin` — dashboard
-- `/admin/settings` — тексты, соцсети, URL hero и портрета
-- `/admin/account` — смена пароля администратора
-- `/admin/events`, `/admin/videos`, `/admin/photos`, `/admin/merch` — CRUD через API
+| URL | Описание |
+|-----|----------|
+| `/admin` | Dashboard |
+| `/admin/settings` | Тексты, соцсети, изображения |
+| `/admin/events` | События и афиша |
+| `/admin/videos` | Видео |
+| `/admin/photos` | Фото |
+| `/admin/merch` | Мерч |
+| `/admin/account` | Смена пароля |
 
-Цена в мерче хранится в **копейках** (например, 150000 = 1500 ₽).
+**Мерч:** цена хранится в **копейках** (150000 = 1500 ₽).
 
-**Загрузка фото:** в админке перетащите изображение в зону загрузки (Photos, Merch, Settings).
-Файлы сохраняются в `uploads/` и доступны по URL `/uploads/...`.
+**Загрузка файлов:** JPEG, PNG, WebP, GIF — до 10 МБ (`MAX_UPLOAD_MB`). Файлы доступны по `/uploads/...`.
 
-Форматы: JPEG, PNG, WebP, GIF (до 10 МБ, настраивается `MAX_UPLOAD_MB`).
+---
+
+## API
+
+JSON API доступен только авторизованному администратору (cookie-сессия).
+
+| Ресурс | Эндпоинты |
+|--------|-----------|
+| События | `GET/POST /api/events`, `GET/PUT/DELETE /api/events/:id`, `GET /api/events/preview-ticket` |
+| Видео | `GET/POST /api/videos`, `GET/PUT/DELETE /api/videos/:id` |
+| Фото | `GET/POST /api/photos`, `GET/PUT/DELETE /api/photos/:id` |
+| Мерч | `GET/POST /api/merch`, `GET/PUT/DELETE /api/merch/:id` |
+| Настройки | `GET/PUT /api/settings` |
+| Загрузка | `POST /api/upload` |
+| Афиша (импорт) | `GET /api/ticket-catalog/providers`, `GET /api/ticket-catalog/:source/events` |
+| Аккаунт | `PUT /api/account/password` |
+
+Мутирующие запросы (`POST`, `PUT`, `DELETE`) требуют заголовок `X-CSRF-Token` (токен в `<meta name="csrf-token">` админки).
+
+Health-check: `GET /health` → `ok`.
+
+---
+
+## Безопасность
+
+Требования к production-окружению, список встроенных защит и правила работы с секретами — в [SECURITY.md](SECURITY.md).
