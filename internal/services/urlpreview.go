@@ -23,6 +23,8 @@ type PagePreview struct {
 	PosterImageURL string `json:"poster_image_url"`
 	Title          string `json:"title,omitempty"`
 	Description    string `json:"description,omitempty"`
+	City           string `json:"city,omitempty"`
+	Date           string `json:"date,omitempty"`
 }
 
 var (
@@ -91,9 +93,21 @@ func (s *URLPreviewService) FetchPagePreview(ctx context.Context, rawURL string)
 	}
 
 	html := string(body)
+	ogTitle := extractMeta(html, ogTitlePatterns)
+	parsed := ParseEventTitle(ogTitle, "")
+
 	preview := PagePreview{
-		Title:       extractMeta(html, ogTitlePatterns),
-		Description: extractMeta(html, ogDescPatterns),
+		Title: parsed.Title,
+	}
+
+	enrichPreviewFromHTML(&preview, html, ogTitle)
+
+	if preview.Description == "" {
+		if ogDesc := extractMeta(html, ogDescPatterns); ogDesc != "" {
+			preview.Description = ogDesc
+		} else {
+			preview.Description = parsed.Description
+		}
 	}
 
 	imageURL := extractMeta(html, ogImagePatterns)

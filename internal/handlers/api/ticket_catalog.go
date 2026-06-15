@@ -51,6 +51,9 @@ func (h *TicketCatalogHandler) Events(c *gin.Context) {
 		return
 	}
 	for i := range items {
+		parsed := services.ParseEventTitle(items[i].Title, items[i].Description)
+		items[i].Title = parsed.Title
+		items[i].Description = parsed.Description
 		if _, ok := existing[items[i].ExternalID]; ok {
 			items[i].AlreadyAdded = true
 		}

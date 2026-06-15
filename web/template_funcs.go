@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/burj/comic/internal/services"
 )
 
 var ruMonths = []string{
@@ -34,4 +36,8 @@ func formatEventMeta(t time.Time) string {
 
 func upperASCII(s string) string {
 	return strings.ToUpper(s)
+}
+
+func attrText(s string) string {
+	return services.AttrText(s)
 }

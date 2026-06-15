@@ -142,9 +142,10 @@
     if (!dateStr) return '';
     const d = new Date(dateStr);
     if (Number.isNaN(d.getTime())) return '';
-    const months = ['ЯНВ', 'ФЕВ', 'МАР', 'АПР', 'МАЙ', 'ИЮН', 'ИЮЛ', 'АВГ', 'СЕН', 'ОКТ', 'НОЯ', 'ДЕК'];
-    const days = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
-    return `${months[d.getMonth()]} · ${days[d.getDay()]}`;
+    const months = ['ЯНВАРЯ', 'ФЕВРАЛЯ', 'МАРТА', 'АПРЕЛЯ', 'МАЯ', 'ИЮНЯ', 'ИЮЛЯ', 'АВГУСТА', 'СЕНТЯБРЯ', 'ОКТЯБРЯ', 'НОЯБРЯ', 'ДЕКАБРЯ'];
+    const h = String(d.getHours()).padStart(2, '0');
+    const m = String(d.getMinutes()).padStart(2, '0');
+    return `${months[d.getMonth()]} ${h}:${m}`;
   }
 
   function updateAdminEventPreview(form) {
@@ -153,17 +154,23 @@
     const meta = document.getElementById('admin-event-preview-meta');
     const city = document.getElementById('admin-event-preview-city');
     const title = document.getElementById('admin-event-preview-title');
+    const desc = document.getElementById('admin-event-preview-desc');
     if (!bg || !form) return;
 
     const dateVal = form.querySelector('[name="date"]')?.value || '';
     const cityVal = (form.querySelector('[name="city"]')?.value || '').trim();
     const titleVal = (form.querySelector('[name="title"]')?.value || '').trim();
+    const descVal = (form.querySelector('[name="description"]')?.value || '').trim();
     const posterVal = (form.querySelector('[name="poster_image_url"]')?.value || '').trim();
 
     if (day) day.textContent = formatEventPreviewDay(dateVal);
     if (meta) meta.textContent = formatEventPreviewMeta(dateVal);
     if (city) city.textContent = cityVal ? cityVal.toUpperCase() : 'ГОРОД';
     if (title) title.textContent = titleVal || 'Название события';
+    if (desc) {
+      desc.textContent = descVal;
+      desc.classList.toggle('hidden', !descVal);
+    }
 
     if (posterVal) {
       bg.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 11, 0.2) 0%, rgba(10, 10, 11, 0.85) 100%), radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.15) 0%, transparent 45%), url("${posterVal.replace(/"/g, '\\"')}")`;
@@ -187,7 +194,7 @@
   }
 
   function initEventPosterPreview(form) {
-    const previewFields = ['title', 'city', 'date', 'poster_image_url'];
+    const previewFields = ['title', 'city', 'date', 'poster_image_url', 'description'];
     previewFields.forEach((name) => {
       const el = form.querySelector(`[name="${name}"]`);
       if (el) el.addEventListener('input', () => updateAdminEventPreview(form));
@@ -204,7 +211,7 @@
     const previewBtn = document.getElementById('ticket-url-preview-btn');
     const previewStatus = document.getElementById('ticket-url-preview-status');
     if (previewBtn) {
-      previewBtn.addEventListener('click', () => fetchTicketPagePreview(form, previewStatus));
+      previewBtn.addEventListener('click', () => fetchTicketPagePreview(form, previewStatus, false, true));
     }
 
     const ticketURL = form.querySelector('[name="ticket_url"]');
@@ -219,7 +226,7 @@
     updateAdminEventPreview(form);
   }
 
-  async function fetchTicketPagePreview(form, statusEl, silent) {
+  async function fetchTicketPagePreview(form, statusEl, silent, force) {
     const ticketURL = form.querySelector('[name="ticket_url"]')?.value?.trim();
     if (!ticketURL) {
       if (!silent && statusEl) statusEl.textContent = 'Сначала укажите ссылку на билеты';
@@ -240,13 +247,23 @@
       if (data.poster_image_url) setPosterURL(form, data.poster_image_url);
       const titleEl = form.querySelector('[name="title"]');
       const descEl = form.querySelector('[name="description"]');
-      if (data.title && titleEl && !titleEl.value.trim()) titleEl.value = data.title;
-      if (data.description && descEl && !descEl.value.trim()) descEl.value = data.description;
+      const cityEl = form.querySelector('[name="city"]');
+      const dateEl = form.querySelector('[name="date"]');
+      if (data.title && titleEl && (force || !titleEl.value.trim())) titleEl.value = data.title;
+      if (data.description && descEl && (force || !descEl.value.trim())) descEl.value = data.description;
+      if (data.city && cityEl && (force || !cityEl.value.trim())) cityEl.value = data.city;
+      if (data.date && dateEl && (force || !dateEl.value.trim())) {
+        const parsed = new Date(data.date);
+        if (!Number.isNaN(parsed.getTime())) {
+          dateEl.value = parsed.toISOString().slice(0, 16);
+        }
+      }
       updateAdminEventPreview(form);
       if (statusEl) {
-        statusEl.textContent = data.poster_image_url
+        const filled = [data.title, data.description, data.city, data.date, data.poster_image_url].filter(Boolean).length;
+        statusEl.textContent = filled
           ? 'Данные подтянуты — проверьте и при необходимости исправьте'
-          : 'Текст подтянут, постер на странице не найден — загрузите вручную';
+          : 'На странице не найдено данных для импорта';
       }
     } catch {
       if (statusEl) statusEl.textContent = 'Сеть недоступна';

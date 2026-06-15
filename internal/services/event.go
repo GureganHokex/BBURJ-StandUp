@@ -174,3 +174,16 @@ func stringsTrimExternal(id, source string) string {
 	}
 	return strings.TrimSpace(id)
 }
+
+func NormalizeEventForDisplay(e *models.Event) {
+	parsed := ParseEventTitle(e.Title, e.Description)
+	e.Title = parsed.Title
+	e.Description = parsed.Description
+}
+
+func NormalizeEventsForDisplay(events []models.Event) []models.Event {
+	for i := range events {
+		NormalizeEventForDisplay(&events[i])
+	}
+	return events
+}

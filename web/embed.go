@@ -20,6 +20,7 @@ func Templates() *template.Template {
 		"formatEventDay":  formatEventDay,
 		"formatEventMeta": formatEventMeta,
 		"upper":           upperASCII,
+		"attr":            attrText,
 	}).ParseFS(templateFS,
 		"templates/layouts/*.html",
 		"templates/public/*.html",

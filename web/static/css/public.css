@@ -420,46 +420,42 @@ a { color: inherit; text-decoration: none; }
 
 .event-card {
   position: relative;
-  min-height: 260px;
-  padding: 1.35rem 1.25rem;
+  min-height: 300px;
   background: var(--bg-card);
   border: 1px solid var(--border-dim);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   overflow: hidden;
-}
-
-.event-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(3, 3, 3, 0.97) 0%, rgba(3, 3, 3, 0.55) 55%, rgba(3, 3, 3, 0.2) 100%);
-  z-index: 1;
 }
 
 .event-card-bg {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(10, 10, 11, 0.15) 0%, rgba(10, 10, 11, 0.75) 100%),
-    radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.15) 0%, transparent 45%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cpath fill='%23ffffff' fill-opacity='0.03' d='M100 20 L130 90 L70 90 Z M60 95 L140 95 L140 110 L60 110 Z'/%3E%3C/svg%3E") center 30% / 70% auto no-repeat;
-  background-size: cover, auto, 70% auto;
-  background-position: center, center, center 30%;
   z-index: 0;
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(217, 173, 42, 0.14) 0%, transparent 52%),
+    radial-gradient(ellipse at 10% 100%, rgba(255, 255, 255, 0.04) 0%, transparent 45%),
+    linear-gradient(165deg, #141416 0%, #0a0a0b 55%, #050506 100%);
+  opacity: 1;
+}
+
+.event-card-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 120'%3E%3Cpath fill='%23ffffff' fill-opacity='0.035' d='M100 20 L130 90 L70 90 Z M60 95 L140 95 L140 110 L60 110 Z'/%3E%3C/svg%3E") center 28% / 62% auto no-repeat;
   opacity: 0.9;
 }
 
-.event-card-bg--poster {
-  background:
-    linear-gradient(180deg, rgba(10, 10, 11, 0.2) 0%, rgba(10, 10, 11, 0.82) 100%),
-    radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.12) 0%, transparent 45%);
-  background-size: cover;
-  background-position: center;
+.event-card-body {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.35rem 1.25rem 0.75rem;
 }
-
-.event-card > * { position: relative; z-index: 2; }
 
 .event-date-row {
   display: flex;
@@ -489,18 +485,207 @@ a { color: inherit; text-decoration: none; }
 
 .event-city {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: clamp(1.1rem, 4vw, 1.35rem);
   font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.35rem;
+  line-height: 1.15;
 }
 
 .event-venue {
   font-size: 0.78rem;
   color: var(--text-muted);
-  margin-bottom: 1.1rem;
+  margin: 0;
   letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+
+.event-actions {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  padding: 0 1.25rem 1.25rem;
+  margin-top: auto;
+}
+
+.event-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.65rem;
+  padding: 0.6rem 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+
+.event-btn--outline {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+}
+
+.event-btn--outline:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(217, 173, 42, 0.08);
+}
+
+.event-btn--gold {
+  border: none;
+  background: var(--gold);
+  color: #0a0806;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+.event-btn--gold:hover {
+  background: var(--gold-bright);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.event-buy-btn--disabled {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
+}
+
+.event-details-btn {
+  font-family: inherit;
+}
+
+.event-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.event-modal[hidden] {
+  display: none;
+}
+
+.event-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.event-modal-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 520px);
+  max-height: min(90vh, 720px);
+  overflow: auto;
+  background: #111;
+  border: 1px solid var(--border-dim);
+  padding: 0 0 1.35rem;
+}
+
+.event-modal-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  z-index: 2;
+  border: 0;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+}
+
+.event-modal-poster-wrap {
+  margin: 0 0 1.15rem;
+  overflow: hidden;
+  background: #0a0a0b;
+}
+
+.event-modal-poster {
+  display: block;
+  width: 100%;
+  max-height: min(42vh, 320px);
+  object-fit: cover;
+}
+
+.event-modal-date,
+.event-modal-title,
+.event-modal-city,
+.event-modal-desc,
+.event-modal-actions {
+  padding-left: 1.35rem;
+  padding-right: 1.35rem;
+}
+
+.event-modal-date {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 0 0.5rem;
+}
+
+.event-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0 0 0.35rem;
+}
+
+.event-modal-city {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+.event-modal-desc {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+  white-space: pre-line;
+}
+
+.event-modal-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
+}
+
+.event-modal-buy {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 2.75rem;
+  min-width: 200px;
+  padding: 0.75rem 1.5rem;
+}
+
+body.event-modal-open {
+  overflow: hidden;
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* Video + About duo */

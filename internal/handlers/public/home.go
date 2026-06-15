@@ -28,6 +28,7 @@ func NewHomeHandler(
 
 func (h *HomeHandler) Index(c *gin.Context) {
 	upcoming, _, _ := h.events.List(4, 0, true)
+	upcoming = services.NormalizeEventsForDisplay(upcoming)
 	latest, _, _ := h.videos.List(1, 0)
 	photos, _, _ := h.photos.List(12, 0)
 	merchItems, _, _ := h.merch.List(4, 0)

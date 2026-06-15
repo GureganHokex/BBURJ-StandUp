@@ -132,7 +132,7 @@ func (h *EventHandler) PreviewTicket(c *gin.Context) {
 		case errors.Is(err, services.ErrPreviewURLBlocked):
 			c.JSON(http.StatusBadRequest, ErrorResponse{Error: "url is not allowed"})
 		case errors.Is(err, services.ErrPreviewNoImage):
-			if preview.Title != "" || preview.Description != "" {
+			if previewHasData(preview) {
 				c.JSON(http.StatusOK, ItemResponse[services.PagePreview]{Data: preview})
 				return
 			}
@@ -143,6 +143,14 @@ func (h *EventHandler) PreviewTicket(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, ItemResponse[services.PagePreview]{Data: preview})
+}
+
+func previewHasData(preview services.PagePreview) bool {
+	return preview.Title != "" ||
+		preview.Description != "" ||
+		preview.City != "" ||
+		preview.Date != "" ||
+		preview.PosterImageURL != ""
 }
 
 func toEventInput(req EventRequest) (services.EventInput, error) {

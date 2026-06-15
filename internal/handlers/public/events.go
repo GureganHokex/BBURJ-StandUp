@@ -18,6 +18,7 @@ func NewEventsHandler(events *services.EventService, settings *services.SiteSett
 
 func (h *EventsHandler) List(c *gin.Context) {
 	items, _, _ := h.events.List(100, 0, false)
+	items = services.NormalizeEventsForDisplay(items)
 	h.render.Page(c, 200, "public/layout", "public/events_content", mergeSite(h.settings, gin.H{
 		"Title":     "Афиша",
 		"PageTitle": "Афиша",

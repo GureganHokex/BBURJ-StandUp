@@ -17,20 +17,7 @@
   {{if .Events}}
   <div class="events-row">
     {{range .Events}}
-    <article class="event-card">
-      <div class="event-card-bg{{if .PosterImageURL}} event-card-bg--poster{{end}}"{{if .PosterImageURL}} style="background-image: linear-gradient(180deg, rgba(10, 10, 11, 0.2) 0%, rgba(10, 10, 11, 0.82) 100%), radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.12) 0%, transparent 45%), url('{{.PosterImageURL}}');"{{end}}></div>
-      <div class="event-date-row">
-        <span class="event-day">{{formatEventDay .Date}}</span>
-        <span class="event-meta">{{formatEventMeta .Date}}</span>
-      </div>
-      <h3 class="event-city">{{upper .City}}</h3>
-      <p class="event-venue">{{.Title}}</p>
-      {{if .TicketURL}}
-      <a href="{{.TicketURL}}" target="_blank" rel="noopener" class="btn-outline">БИЛЕТЫ</a>
-      {{else}}
-      <span class="btn-outline" style="opacity:0.5;pointer-events:none">СКОРО</span>
-      {{end}}
-    </article>
+    {{template "public/event_card" .}}
     {{end}}
   </div>
   {{else}}
