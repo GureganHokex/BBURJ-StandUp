@@ -16,9 +16,9 @@
     <p class="event-venue">{{.Title}}</p>
   </div>
   <div class="event-actions">
-    <button type="button" class="event-btn event-btn--outline event-details-btn">ПОДРОБНЕЕ</button>
+    <button type="button" class="event-btn event-btn--outline event-details-btn" aria-label="Подробнее о событии">ПОДРОБНЕЕ</button>
     {{if .TicketURL}}
-    <a href="{{.TicketURL}}" target="_blank" rel="noopener" class="event-btn event-btn--gold event-buy-btn">КУПИТЬ →</a>
+    <a href="{{.TicketURL}}" target="_blank" rel="noopener" class="event-btn event-btn--gold event-buy-btn" aria-label="Купить билеты">КУПИТЬ →</a>
     {{else}}
     <span class="event-btn event-btn--outline event-buy-btn event-buy-btn--disabled">СКОРО</span>
     {{end}}

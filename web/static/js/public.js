@@ -111,6 +111,9 @@
 
     modal.hidden = false;
     document.body.classList.add('event-modal-open');
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      window.scrollTo(0, window.scrollY);
+    }
   }
 
   document.addEventListener('click', function (e) {
