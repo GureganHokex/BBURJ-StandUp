@@ -41,7 +41,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	password := c.PostForm("password")
 	next := security.SafeRedirectPath(c.PostForm("next"), "/admin")
 
-	sessionID, err := h.auth.Login(username, password)
+	sessionID, err := h.auth.Login(username, password, middleware.SessionID(c))
 	if err != nil {
 		h.render.HTML(c, 401, "admin/login.html", gin.H{
 			"Title": "Вход",

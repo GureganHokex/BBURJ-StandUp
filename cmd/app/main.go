@@ -61,7 +61,9 @@ func main() {
 	photoRepo := repository.NewPhotoRepository(db)
 	settingsRepo := repository.NewSiteSettingsRepository(db)
 
-	sessions := session.NewStore(cfg.SessionSecret)
+	sessionRepo := repository.NewSessionRepository(db)
+	sessions := session.NewStore(sessionRepo)
+	sessions.CleanupExpired()
 	authService := services.NewAuthService(adminRepo, sessions)
 	eventService := services.NewEventService(eventRepo)
 	videoService := services.NewVideoService(videoRepo)

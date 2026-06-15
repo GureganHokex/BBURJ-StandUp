@@ -31,3 +31,16 @@ func (r *AdminUserRepository) FindByUsername(username string) (*models.AdminUser
 func (r *AdminUserRepository) Create(user *models.AdminUser) error {
 	return r.db.Create(user).Error
 }
+
+func (r *AdminUserRepository) FindByID(id uint) (*models.AdminUser, error) {
+	var user models.AdminUser
+	err := r.db.First(&user, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *AdminUserRepository) UpdatePassword(id uint, passwordHash string) error {
+	return r.db.Model(&models.AdminUser{}).Where("id = ?", id).Update("password_hash", passwordHash).Error
+}

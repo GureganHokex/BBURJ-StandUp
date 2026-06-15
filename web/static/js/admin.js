@@ -127,9 +127,12 @@
     });
   }
 
-  document.body.addEventListener('htmx:configRequest', function (evt) {
-    evt.detail.headers['X-CSRF-Token'] = csrf;
-  });
+  function showFieldErrors(errBox, errs) {
+    errBox.classList.remove('hidden');
+    errBox.innerHTML = Object.entries(errs)
+      .map(([k, v]) => `<div><strong>${escapeHtml(k)}</strong>: ${escapeHtml(String(v))}</div>`)
+      .join('');
+  }
 
   const tableBody = document.getElementById('admin-table-body');
   if (tableBody && document.body.dataset.pageMode === 'list' && document.body.dataset.apiPath) {
@@ -209,11 +212,8 @@
         const data = await r.json().catch(() => ({}));
         const errBox = document.getElementById('form-errors');
         if (!r.ok) {
-          errBox.classList.remove('hidden');
           const errs = data.errors || { error: data.error || 'Ошибка сохранения' };
-          errBox.innerHTML = Object.entries(errs)
-            .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
-            .join('');
+          showFieldErrors(errBox, errs);
           return;
         }
         errBox.innerHTML = '<div class="text-green-800">Сохранено</div>';
@@ -282,13 +282,35 @@
           if (!r.ok) {
             errBox.classList.remove('hidden');
             const errs = data.errors || { error: data.error || 'Ошибка сохранения' };
-            errBox.innerHTML = Object.entries(errs)
-              .map(([k, v]) => `<div><strong>${k}</strong>: ${v}</div>`)
-              .join('');
+            showFieldErrors(errBox, errs);
             return;
           }
           window.location.href = `/admin/${document.body.dataset.modelSlug}`;
         });
+    });
+  const accountForm = document.getElementById('account-form');
+  if (accountForm && document.body.dataset.pageMode === 'account') {
+    accountForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const errBox = document.getElementById('form-errors');
+      const body = {
+        current_password: accountForm.querySelector('[name="current_password"]').value,
+        new_password: accountForm.querySelector('[name="new_password"]').value,
+      };
+      fetch('/api/account/password', {
+        method: 'PUT',
+        headers: apiHeaders(true),
+        credentials: 'same-origin',
+        body: JSON.stringify(body),
+      }).then(async (r) => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          const errs = data.errors || { error: data.error || 'Ошибка смены пароля' };
+          showFieldErrors(errBox, errs);
+          return;
+        }
+        window.location.href = '/admin/login';
+      });
     });
   }
 })();

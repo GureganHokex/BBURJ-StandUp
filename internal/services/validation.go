@@ -28,8 +28,12 @@ func validateOptionalURL(field, value string) FieldErrors {
 	if isLocalAssetPath(value) {
 		return nil
 	}
-	if _, err := url.ParseRequestURI(value); err != nil {
+	parsed, err := url.ParseRequestURI(value)
+	if err != nil {
 		return FieldErrors{field: "invalid url"}
+	}
+	if !isAllowedURLScheme(parsed.Scheme) {
+		return FieldErrors{field: "url must use http or https"}
 	}
 	return nil
 }
@@ -39,6 +43,15 @@ func validateImageURL(field, value string) FieldErrors {
 		return FieldErrors{field: "required"}
 	}
 	return validateOptionalURL(field, value)
+}
+
+func isAllowedURLScheme(scheme string) bool {
+	switch strings.ToLower(scheme) {
+	case "http", "https":
+		return true
+	default:
+		return false
+	}
 }
 
 func isLocalAssetPath(value string) bool {

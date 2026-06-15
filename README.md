@@ -83,6 +83,7 @@ go run ./cmd/app
 
 - `/admin` — dashboard
 - `/admin/settings` — тексты, соцсети, URL hero и портрета
+- `/admin/account` — смена пароля администратора
 - `/admin/events`, `/admin/videos`, `/admin/photos`, `/admin/merch` — CRUD через API
 
 Цена в мерче хранится в **копейках** (например, 150000 = 1500 ₽).

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/burj/comic/internal/services"
@@ -27,7 +28,7 @@ func AdminAuth(auth *services.AuthService) gin.HandlerFunc {
 			if c.Request.URL.RawQuery != "" {
 				next += "?" + c.Request.URL.RawQuery
 			}
-			c.Redirect(http.StatusFound, "/admin/login?next="+next)
+			c.Redirect(http.StatusFound, "/admin/login?next="+url.QueryEscape(next))
 			c.Abort()
 			return
 		}

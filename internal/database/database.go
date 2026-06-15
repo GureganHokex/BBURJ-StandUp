@@ -27,6 +27,7 @@ func Connect(dsn string, appEnv string) (*gorm.DB, error) {
 func AutoMigrate(db *gorm.DB) error {
 	if err := db.AutoMigrate(
 		&models.AdminUser{},
+		&models.AdminSession{},
 		&models.Event{},
 		&models.Video{},
 		&models.Merch{},

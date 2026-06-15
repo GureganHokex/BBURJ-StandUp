@@ -30,11 +30,14 @@ The app **refuses to start** if production config is unsafe.
 
 - bcrypt passwords
 - HttpOnly session cookies, SameSite=Lax
+- Sessions stored in PostgreSQL (survive restarts)
 - CSRF on admin login and API mutations
 - Open redirect protection on post-login `next`
 - Rate limits: login (10 / 15 min per IP), uploads (60 / hour per IP)
 - Upload: size limit, MIME sniffing, random filenames
-- Security headers (CSP, X-Frame-Options, HSTS in production)
+- Security headers (strict CSP, X-Frame-Options, HSTS in production)
+- External URLs restricted to `http`/`https` schemes
+- Admin password change at `/admin/account`
 - API pagination cap (100)
 - Generic 500 errors in production (no stack traces to clients)
 

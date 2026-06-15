@@ -98,8 +98,11 @@ func NewRouter(deps Deps) *gin.Engine {
 		pages := admin.NewPagesHandler(csrf, renderer)
 		settingsPage := admin.NewSettingsHandler(csrf, renderer)
 
+		accountPage := admin.NewAccountHandler(csrf, renderer)
+
 		protectedAdmin.POST("/logout", csrf.Protect(), authHandler.Logout)
 		protectedAdmin.GET("", dashboard.Index)
+		protectedAdmin.GET("/account", accountPage.Page)
 		protectedAdmin.GET("/settings", settingsPage.Page)
 		protectedAdmin.GET("/:model/new", pages.New)
 		protectedAdmin.GET("/:model/:id/edit", pages.Edit)
@@ -115,6 +118,7 @@ func NewRouter(deps Deps) *gin.Engine {
 		merchAPI := api.NewMerchHandler(deps.Merch)
 		photoAPI := api.NewPhotoHandler(deps.Photos)
 		settingsAPI := api.NewSettingsHandler(deps.Settings)
+		accountAPI := api.NewAccountHandler(deps.Auth)
 		uploadAPI := api.NewUploadHandler(deps.Uploader)
 
 		mutating := apiGroup.Group("")
@@ -124,6 +128,7 @@ func NewRouter(deps Deps) *gin.Engine {
 				middleware.RateLimit(limiter, 60, time.Hour),
 				uploadAPI.Upload,
 			)
+			mutating.PUT("/account/password", accountAPI.ChangePassword)
 			mutating.POST("/events", eventAPI.Create)
 			mutating.PUT("/events/:id", eventAPI.Update)
 			mutating.DELETE("/events/:id", eventAPI.Delete)

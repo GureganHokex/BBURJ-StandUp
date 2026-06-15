@@ -10,7 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
-var ErrInvalidCredentials = errors.New("invalid credentials")
+const minPasswordLen = 12
+
+var (
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrWeakPassword       = errors.New("password too weak")
+)
 
 type AuthService struct {
 	adminRepo *repository.AdminUserRepository
@@ -41,7 +46,7 @@ func (s *AuthService) SeedAdmin(username, password string) error {
 	})
 }
 
-func (s *AuthService) Login(username, password string) (string, error) {
+func (s *AuthService) Login(username, password, oldSessionID string) (string, error) {
 	user, err := s.adminRepo.FindByUsername(username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -54,7 +59,38 @@ func (s *AuthService) Login(username, password string) (string, error) {
 		return "", ErrInvalidCredentials
 	}
 
-	return s.sessions.Create(user.ID), nil
+	if oldSessionID != "" {
+		s.sessions.Delete(oldSessionID)
+	}
+
+	return s.sessions.Create(user.ID)
+}
+
+func (s *AuthService) ChangePassword(adminID uint, currentPassword, newPassword string) error {
+	if len(newPassword) < minPasswordLen {
+		return ErrWeakPassword
+	}
+
+	user, err := s.adminRepo.FindByID(adminID)
+	if err != nil {
+		return err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(currentPassword)); err != nil {
+		return ErrInvalidCredentials
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	if err := s.adminRepo.UpdatePassword(adminID, string(hash)); err != nil {
+		return err
+	}
+
+	s.sessions.DeleteAllForAdmin(adminID)
+	return nil
 }
 
 func (s *AuthService) Logout(sessionID string) {

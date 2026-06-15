@@ -17,11 +17,10 @@ func SecurityHeaders(production bool) gin.HandlerFunc {
 		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
 		c.Header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
 		c.Header("X-Permitted-Cross-Domain-Policies", "none")
-		// CSP: allow self, uploads, Google fonts, YouTube embeds, Tailwind CDN in admin
 		c.Header("Content-Security-Policy", strings.Join([]string{
 			"default-src 'self'",
-			"script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com",
-			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com",
+			"script-src 'self'",
+			"style-src 'self' https://fonts.googleapis.com",
 			"font-src 'self' https://fonts.gstatic.com",
 			"img-src 'self' data: https:",
 			"frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",

@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{.Title}} — Админ</title>
   <link rel="icon" href="/static/img/logo.png" type="image/png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/tailwind.css">
   <link rel="stylesheet" href="/static/css/admin.css">
   <meta name="csrf-token" content="{{.CSRF}}">
 </head>
@@ -24,6 +22,7 @@
       <a href="/admin/photos" class="block px-3 py-2 rounded {{if eq .Active "photos"}}bg-slate-800{{else}}hover:bg-slate-800{{end}}">Photos</a>
       <a href="/admin/videos" class="block px-3 py-2 rounded {{if eq .Active "videos"}}bg-slate-800{{else}}hover:bg-slate-800{{end}}">Videos</a>
       <a href="/admin/merch" class="block px-3 py-2 rounded {{if eq .Active "merch"}}bg-slate-800{{else}}hover:bg-slate-800{{end}}">Merch</a>
+      <a href="/admin/account" class="block px-3 py-2 rounded {{if eq .Active "account"}}bg-slate-800{{else}}hover:bg-slate-800{{end}}">Пароль</a>
     </nav>
     <form method="post" action="/admin/logout" class="p-4 border-t border-slate-700">
       <input type="hidden" name="csrf_token" value="{{.CSRF}}">

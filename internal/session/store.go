@@ -3,55 +3,65 @@ package session
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"sync"
+	"errors"
 	"time"
+
+	"github.com/burj/comic/internal/repository"
+	"gorm.io/gorm"
 )
 
-type data struct {
-	AdminID   uint
-	ExpiresAt time.Time
-}
-
 type Store struct {
-	secret string
-	ttl    time.Duration
-	mu     sync.RWMutex
-	items  map[string]data
+	repo *repository.SessionRepository
+	ttl  time.Duration
 }
 
-func NewStore(secret string) *Store {
+func NewStore(repo *repository.SessionRepository) *Store {
 	return &Store{
-		secret: secret,
-		ttl:    24 * time.Hour,
-		items:  make(map[string]data),
+		repo: repo,
+		ttl:  24 * time.Hour,
 	}
 }
 
-func (s *Store) Create(adminID uint) string {
+func (s *Store) Create(adminID uint) (string, error) {
 	id := randomID()
-	s.mu.Lock()
-	s.items[id] = data{AdminID: adminID, ExpiresAt: time.Now().Add(s.ttl)}
-	s.mu.Unlock()
-	return id
+	expiresAt := time.Now().Add(s.ttl)
+	if err := s.repo.Create(id, adminID, expiresAt); err != nil {
+		return "", err
+	}
+	return id, nil
 }
 
 func (s *Store) GetAdminID(sessionID string) (uint, bool) {
-	s.mu.RLock()
-	item, ok := s.items[sessionID]
-	s.mu.RUnlock()
-	if !ok || time.Now().After(item.ExpiresAt) {
-		if ok {
-			s.Delete(sessionID)
+	if sessionID == "" {
+		return 0, false
+	}
+	adminID, expiresAt, err := s.repo.FindAdminID(sessionID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 0, false
 		}
 		return 0, false
 	}
-	return item.AdminID, true
+	if time.Now().After(expiresAt) {
+		_ = s.repo.Delete(sessionID)
+		return 0, false
+	}
+	return adminID, true
 }
 
 func (s *Store) Delete(sessionID string) {
-	s.mu.Lock()
-	delete(s.items, sessionID)
-	s.mu.Unlock()
+	if sessionID == "" {
+		return
+	}
+	_ = s.repo.Delete(sessionID)
+}
+
+func (s *Store) DeleteAllForAdmin(adminID uint) {
+	_ = s.repo.DeleteByAdminID(adminID)
+}
+
+func (s *Store) CleanupExpired() {
+	_ = s.repo.DeleteExpired()
 }
 
 func randomID() string {
