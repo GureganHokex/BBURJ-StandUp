@@ -985,7 +985,7 @@ body.lightbox-open {
   display: grid;
   grid-template-columns: minmax(12rem, 1fr) 2fr;
   gap: clamp(2rem, 5vw, 4rem);
-  align-items: start;
+  align-items: center;
 }
 
 .social-cta-title {
@@ -1002,11 +1002,16 @@ body.lightbox-open {
 
 .social-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
+  align-items: stretch;
 }
 
 .social-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
   text-align: center;
   padding: 1.25rem 0.75rem;
 }
@@ -1015,6 +1020,9 @@ body.lightbox-open {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
   margin-bottom: 0.75rem;
   color: var(--gold);
   background: transparent;
@@ -1038,12 +1046,15 @@ body.lightbox-open {
   font-weight: 400;
   letter-spacing: 0.12em;
   margin: 0 0 0.35rem;
+  min-height: 1.2em;
 }
 
 .social-card p {
   color: var(--text-muted);
   font-size: 0.85rem;
-  margin: 0 0 1rem;
+  line-height: 1.35;
+  min-height: 1.35rem;
+  margin: 0;
 }
 
 .social-item h3 {
