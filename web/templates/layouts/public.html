@@ -26,9 +26,9 @@
       </div>
     </nav>
     <div class="site-socials">
-      <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" title="YouTube">YT</a>
-      <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" title="Telegram">TG</a>
-      <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" title="Instagram">IG</a>
+      <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="social-icon-link" title="YouTube" aria-label="YouTube">{{template "public/icon_youtube" .}}</a>
+      <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="social-icon-link" title="Telegram" aria-label="Telegram">{{template "public/icon_telegram" .}}</a>
+      <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="social-icon-link" title="Instagram" aria-label="Instagram">{{template "public/icon_instagram" .}}</a>
     </div>
     <button type="button" class="site-menu-btn" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
       <span class="site-menu-icon" aria-hidden="true"></span>

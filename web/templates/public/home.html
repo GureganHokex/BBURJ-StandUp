@@ -138,19 +138,19 @@
     <h2 class="social-cta-title">ПОДПИСЫВАЙСЯ<br>НА МОИ СОЦСЕТИ →</h2>
     <div class="social-grid">
       <div class="social-card">
-        <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="social-card-icon" title="YouTube">YT</a>
+        <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="social-card-icon" title="YouTube" aria-label="YouTube">{{template "public/icon_youtube" .}}</a>
         <h3>YOUTUBE</h3>
         <p>{{.Settings.YouTubeHandle}}</p>
         <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="btn-outline">ПЕРЕЙТИ</a>
       </div>
       <div class="social-card">
-        <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="social-card-icon" title="Telegram">TG</a>
+        <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="social-card-icon" title="Telegram" aria-label="Telegram">{{template "public/icon_telegram" .}}</a>
         <h3>TELEGRAM</h3>
         <p>{{.Settings.TelegramHandle}}</p>
         <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="btn-outline">ПЕРЕЙТИ</a>
       </div>
       <div class="social-card">
-        <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="social-card-icon" title="Instagram">IG</a>
+        <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="social-card-icon" title="Instagram" aria-label="Instagram">{{template "public/icon_instagram" .}}</a>
         <h3>INSTAGRAM</h3>
         <p>{{.Settings.InstagramHandle}}</p>
         <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="btn-outline">ПЕРЕЙТИ</a>
