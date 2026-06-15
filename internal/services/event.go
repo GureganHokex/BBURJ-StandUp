@@ -16,9 +16,10 @@ type EventInput struct {
 	Title        string
 	Date         time.Time
 	City         string
-	Description  string
-	TicketURL    string
-	TicketSource string
+	Description    string
+	TicketURL      string
+	PosterImageURL string
+	TicketSource   string
 	ExternalID   string
 }
 
@@ -59,13 +60,14 @@ func (s *EventService) Create(input EventInput) (*models.Event, FieldErrors, err
 
 	source := normalizeTicketSource(input.TicketSource)
 	event := &models.Event{
-		Title:        input.Title,
-		Date:         input.Date,
-		City:         input.City,
-		Description:  input.Description,
-		TicketURL:    input.TicketURL,
-		TicketSource: source,
-		ExternalID:   stringsTrimExternal(input.ExternalID, source),
+		Title:          input.Title,
+		Date:           input.Date,
+		City:           input.City,
+		Description:    input.Description,
+		TicketURL:      input.TicketURL,
+		PosterImageURL: input.PosterImageURL,
+		TicketSource:   source,
+		ExternalID:     stringsTrimExternal(input.ExternalID, source),
 	}
 	if err := s.repo.Create(event); err != nil {
 		return nil, nil, err
@@ -99,6 +101,7 @@ func (s *EventService) Update(id uint, input EventInput) (*models.Event, FieldEr
 	event.City = input.City
 	event.Description = input.Description
 	event.TicketURL = input.TicketURL
+	event.PosterImageURL = input.PosterImageURL
 	event.TicketSource = source
 	event.ExternalID = externalID
 
@@ -120,7 +123,7 @@ func (s *EventService) validate(input EventInput) FieldErrors {
 	if input.Date.IsZero() {
 		errs["date"] = "required"
 	}
-	return mergeErrors(errs, validateOptionalURL("ticket_url", input.TicketURL))
+	return mergeErrors(errs, validateOptionalURL("ticket_url", input.TicketURL), validateOptionalURL("poster_image_url", input.PosterImageURL))
 }
 
 func (s *EventService) ensureNotDuplicate(input EventInput) error {

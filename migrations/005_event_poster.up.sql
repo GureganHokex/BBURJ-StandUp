@@ -1,0 +1,2 @@
+ALTER TABLE events
+    ADD COLUMN IF NOT EXISTS poster_image_url VARCHAR(512) NOT NULL DEFAULT '';

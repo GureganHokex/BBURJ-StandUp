@@ -70,6 +70,7 @@ func main() {
 	merchService := services.NewMerchService(merchRepo)
 	photoService := services.NewPhotoService(photoRepo)
 	settingsService := services.NewSiteSettingsService(settingsRepo)
+	urlPreviewService := services.NewURLPreviewService()
 
 	if err := authService.SeedAdmin(cfg.AdminUsername, cfg.AdminPassword); err != nil {
 		log.Fatalf("seed admin: %v", err)
@@ -90,7 +91,8 @@ func main() {
 		Videos:    videoService,
 		Merch:     merchService,
 		Photos:    photoService,
-		Settings:  settingsService,
+		Settings:   settingsService,
+		URLPreview: urlPreviewService,
 		Uploader:  uploader,
 		UploadDir: cfg.UploadDir,
 		Templates: web.Templates(),

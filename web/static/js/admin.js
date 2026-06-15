@@ -95,6 +95,8 @@
           if (url) {
             hidden.value = url;
             setPreview(url);
+            const rootForm = zone.closest('form');
+            if (rootForm) updateAdminEventPreview(rootForm);
           }
         } catch {
           setError('Сеть недоступна');
@@ -127,6 +129,128 @@
 
       if (hidden.value) setPreview(hidden.value);
     });
+  }
+
+  function formatEventPreviewDay(dateStr) {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return '—';
+    return String(d.getDate()).padStart(2, '0');
+  }
+
+  function formatEventPreviewMeta(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return '';
+    const months = ['ЯНВ', 'ФЕВ', 'МАР', 'АПР', 'МАЙ', 'ИЮН', 'ИЮЛ', 'АВГ', 'СЕН', 'ОКТ', 'НОЯ', 'ДЕК'];
+    const days = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
+    return `${months[d.getMonth()]} · ${days[d.getDay()]}`;
+  }
+
+  function updateAdminEventPreview(form) {
+    const bg = document.getElementById('admin-event-preview-bg');
+    const day = document.getElementById('admin-event-preview-day');
+    const meta = document.getElementById('admin-event-preview-meta');
+    const city = document.getElementById('admin-event-preview-city');
+    const title = document.getElementById('admin-event-preview-title');
+    if (!bg || !form) return;
+
+    const dateVal = form.querySelector('[name="date"]')?.value || '';
+    const cityVal = (form.querySelector('[name="city"]')?.value || '').trim();
+    const titleVal = (form.querySelector('[name="title"]')?.value || '').trim();
+    const posterVal = (form.querySelector('[name="poster_image_url"]')?.value || '').trim();
+
+    if (day) day.textContent = formatEventPreviewDay(dateVal);
+    if (meta) meta.textContent = formatEventPreviewMeta(dateVal);
+    if (city) city.textContent = cityVal ? cityVal.toUpperCase() : 'ГОРОД';
+    if (title) title.textContent = titleVal || 'Название события';
+
+    if (posterVal) {
+      bg.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 11, 0.2) 0%, rgba(10, 10, 11, 0.85) 100%), radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.15) 0%, transparent 45%), url("${posterVal.replace(/"/g, '\\"')}")`;
+    } else {
+      bg.style.backgroundImage = '';
+    }
+  }
+
+  function setPosterURL(form, url) {
+    const hidden = form.querySelector('[name="poster_image_url"]');
+    const manual = document.getElementById('poster-url-manual');
+    const previewWrap = hidden?.closest('.form-field')?.querySelector('.upload-preview-wrap');
+    const previewImg = previewWrap?.querySelector('.upload-preview');
+    if (hidden) hidden.value = url || '';
+    if (manual) manual.value = url || '';
+    if (url && previewWrap && previewImg) {
+      previewImg.src = url;
+      previewWrap.classList.remove('hidden');
+    }
+    updateAdminEventPreview(form);
+  }
+
+  function initEventPosterPreview(form) {
+    const previewFields = ['title', 'city', 'date', 'poster_image_url'];
+    previewFields.forEach((name) => {
+      const el = form.querySelector(`[name="${name}"]`);
+      if (el) el.addEventListener('input', () => updateAdminEventPreview(form));
+      if (el && name === 'date') el.addEventListener('change', () => updateAdminEventPreview(form));
+    });
+
+    const manual = document.getElementById('poster-url-manual');
+    if (manual) {
+      manual.addEventListener('change', () => {
+        setPosterURL(form, manual.value.trim());
+      });
+    }
+
+    const previewBtn = document.getElementById('ticket-url-preview-btn');
+    const previewStatus = document.getElementById('ticket-url-preview-status');
+    if (previewBtn) {
+      previewBtn.addEventListener('click', () => fetchTicketPagePreview(form, previewStatus));
+    }
+
+    const ticketURL = form.querySelector('[name="ticket_url"]');
+    if (ticketURL) {
+      ticketURL.addEventListener('blur', () => {
+        const url = ticketURL.value.trim();
+        if (!url || form.querySelector('[name="poster_image_url"]')?.value) return;
+        fetchTicketPagePreview(form, previewStatus, true);
+      });
+    }
+
+    updateAdminEventPreview(form);
+  }
+
+  async function fetchTicketPagePreview(form, statusEl, silent) {
+    const ticketURL = form.querySelector('[name="ticket_url"]')?.value?.trim();
+    if (!ticketURL) {
+      if (!silent && statusEl) statusEl.textContent = 'Сначала укажите ссылку на билеты';
+      return;
+    }
+    if (statusEl) statusEl.textContent = 'Загрузка предпросмотра…';
+    try {
+      const r = await fetch(`/api/events/preview-ticket?url=${encodeURIComponent(ticketURL)}`, {
+        headers: apiHeaders(false),
+        credentials: 'same-origin',
+      });
+      const payload = await r.json().catch(() => ({}));
+      const data = payload.data || {};
+      if (!r.ok) {
+        if (statusEl) statusEl.textContent = payload.error || 'Не удалось получить данные со страницы';
+        return;
+      }
+      if (data.poster_image_url) setPosterURL(form, data.poster_image_url);
+      const titleEl = form.querySelector('[name="title"]');
+      const descEl = form.querySelector('[name="description"]');
+      if (data.title && titleEl && !titleEl.value.trim()) titleEl.value = data.title;
+      if (data.description && descEl && !descEl.value.trim()) descEl.value = data.description;
+      updateAdminEventPreview(form);
+      if (statusEl) {
+        statusEl.textContent = data.poster_image_url
+          ? 'Данные подтянуты — проверьте и при необходимости исправьте'
+          : 'Текст подтянут, постер на странице не найден — загрузите вручную';
+      }
+    } catch {
+      if (statusEl) statusEl.textContent = 'Сеть недоступна';
+    }
   }
 
   function showFieldErrors(errBox, errs) {
@@ -236,6 +360,7 @@
     const recordId = parseInt(pageData.recordId || '0', 10);
     if (pageData.pageMode === 'event-form') {
       initTicketImporter(form);
+      initEventPosterPreview(form);
     }
     if (recordId > 0) {
       fetch(`${pageData.apiPath}/${recordId}`, {
@@ -265,6 +390,11 @@
             if (ext) ext.value = data.external_id;
           }
           initDropzones(form);
+          if (pageData.pageMode === 'event-form') {
+            const manual = document.getElementById('poster-url-manual');
+            if (manual && data.poster_image_url) manual.value = data.poster_image_url;
+            updateAdminEventPreview(form);
+          }
         });
     } else {
       initDropzones(form);
@@ -359,9 +489,14 @@
             .map((item, index) => {
               const date = item.date ? new Date(item.date).toLocaleString('ru-RU') : '';
               const added = item.already_added ? ' · уже в афише' : '';
+              const thumb = item.poster_image_url
+                ? `<img src="${escapeHtml(item.poster_image_url)}" alt="" class="ticket-pick-thumb">`
+                : '<div class="ticket-pick-thumb"></div>';
               return `<button type="button" class="ticket-pick w-full text-left px-3 py-2 hover:bg-slate-50 text-sm" data-index="${index}">
+              <div class="ticket-pick-row">${thumb}<div>
               <div class="font-medium text-slate-900">${escapeHtml(item.title || '')}${added}</div>
               <div class="text-slate-500 text-xs">${escapeHtml(date)} · ${escapeHtml(item.city || '')}</div>
+              </div></div>
             </button>`;
             })
             .join('');
@@ -395,6 +530,11 @@
     }
     set('ticket_source', item.source || 'manual');
     set('external_id', item.external_id || '');
+    if (item.poster_image_url) {
+      setPosterURL(form, item.poster_image_url);
+    } else {
+      updateAdminEventPreview(form);
+    }
   }
 
   const accountForm = document.getElementById('account-form');

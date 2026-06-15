@@ -7,7 +7,7 @@
   <div class="events-row">
     {{range .Events}}
     <article class="event-card">
-      <div class="event-card-bg"></div>
+      <div class="event-card-bg{{if .PosterImageURL}} event-card-bg--poster{{end}}"{{if .PosterImageURL}} style="background-image: linear-gradient(180deg, rgba(10, 10, 11, 0.2) 0%, rgba(10, 10, 11, 0.82) 100%), radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.12) 0%, transparent 45%), url('{{.PosterImageURL}}');"{{end}}></div>
       <div class="event-date-row">
         <span class="event-day">{{formatEventDay .Date}}</span>
         <span class="event-meta">{{formatEventMeta .Date}}</span>

@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/burj/comic/internal/services"
 	"github.com/gin-gonic/gin"
@@ -10,10 +11,11 @@ import (
 
 type EventHandler struct {
 	service *services.EventService
+	preview *services.URLPreviewService
 }
 
-func NewEventHandler(service *services.EventService) *EventHandler {
-	return &EventHandler{service: service}
+func NewEventHandler(service *services.EventService, preview *services.URLPreviewService) *EventHandler {
+	return &EventHandler{service: service, preview: preview}
 }
 
 func (h *EventHandler) List(c *gin.Context) {
@@ -115,19 +117,48 @@ func (h *EventHandler) Delete(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func (h *EventHandler) PreviewTicket(c *gin.Context) {
+	rawURL := strings.TrimSpace(c.Query("url"))
+	if rawURL == "" {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "url is required"})
+		return
+	}
+
+	preview, err := h.preview.FetchPagePreview(c.Request.Context(), rawURL)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrPreviewURLInvalid):
+			c.JSON(http.StatusBadRequest, ErrorResponse{Error: "invalid url"})
+		case errors.Is(err, services.ErrPreviewURLBlocked):
+			c.JSON(http.StatusBadRequest, ErrorResponse{Error: "url is not allowed"})
+		case errors.Is(err, services.ErrPreviewNoImage):
+			if preview.Title != "" || preview.Description != "" {
+				c.JSON(http.StatusOK, ItemResponse[services.PagePreview]{Data: preview})
+				return
+			}
+			c.JSON(http.StatusNotFound, ErrorResponse{Error: "poster image not found on page"})
+		default:
+			writeInternalError(c, appConfig(c), err)
+		}
+		return
+	}
+	c.JSON(http.StatusOK, ItemResponse[services.PagePreview]{Data: preview})
+}
+
 func toEventInput(req EventRequest) (services.EventInput, error) {
 	date, err := parseDate(req.Date)
 	if err != nil {
 		return services.EventInput{}, err
 	}
 	return services.EventInput{
-		Title:        req.Title,
-		Date:         date,
-		City:         req.City,
-		Description:  req.Description,
-		TicketURL:    req.TicketURL,
-		TicketSource: req.TicketSource,
-		ExternalID:   req.ExternalID,
+		Title:          req.Title,
+		Date:           date,
+		City:           req.City,
+		Description:    req.Description,
+		TicketURL:      req.TicketURL,
+		PosterImageURL: req.PosterImageURL,
+		TicketSource:   req.TicketSource,
+		ExternalID:     req.ExternalID,
 	}, nil
 }
 

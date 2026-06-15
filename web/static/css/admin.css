@@ -69,3 +69,89 @@
   font-size: 0.8rem;
   color: #b91c1c;
 }
+
+.admin-event-preview {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  min-height: 220px;
+  background: #0a0a0b;
+  color: #f5f5f4;
+}
+
+.admin-event-preview-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(10, 10, 11, 0.2) 0%, rgba(10, 10, 11, 0.85) 100%),
+    radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.15) 0%, transparent 45%);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.95;
+}
+
+.admin-event-preview-body {
+  position: relative;
+  z-index: 1;
+  padding: 1.25rem;
+}
+
+.admin-event-preview-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-event-preview-date span:first-child {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: #d9ad2a;
+  line-height: 1;
+}
+
+.admin-event-preview-meta {
+  font-size: 0.75rem;
+  color: #a8a29e;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-event-preview-city {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.35rem;
+}
+
+.admin-event-preview-title {
+  font-size: 0.875rem;
+  color: #d6d3d1;
+  margin: 0 0 1rem;
+}
+
+.admin-event-preview-btn {
+  display: inline-block;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(217, 173, 42, 0.6);
+  color: #d9ad2a;
+  border-radius: 2px;
+}
+
+.ticket-pick-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+  background: #e2e8f0;
+}
+
+.ticket-pick-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+

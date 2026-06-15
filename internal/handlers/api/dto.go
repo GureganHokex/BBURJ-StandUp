@@ -22,9 +22,10 @@ type EventRequest struct {
 	Title        string `json:"title"`
 	Date         string `json:"date"`
 	City         string `json:"city"`
-	Description  string `json:"description"`
-	TicketURL    string `json:"ticket_url"`
-	TicketSource string `json:"ticket_source"`
+	Description    string `json:"description"`
+	TicketURL      string `json:"ticket_url"`
+	PosterImageURL string `json:"poster_image_url"`
+	TicketSource   string `json:"ticket_source"`
 	ExternalID   string `json:"external_id"`
 }
 

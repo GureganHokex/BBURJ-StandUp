@@ -25,8 +25,9 @@ type Deps struct {
 	Videos    *services.VideoService
 	Merch     *services.MerchService
 	Photos    *services.PhotoService
-	Settings  *services.SiteSettingsService
-	Uploader  *storage.Uploader
+	Settings    *services.SiteSettingsService
+	URLPreview  *services.URLPreviewService
+	Uploader    *storage.Uploader
 	UploadDir string
 	Templates *template.Template
 	StaticFS  fs.FS
@@ -114,7 +115,7 @@ func NewRouter(deps Deps) *gin.Engine {
 	apiGroup.Use(middleware.AdminAuth(deps.Auth))
 	apiGroup.Use(csrf.EnsureToken())
 	{
-		eventAPI := api.NewEventHandler(deps.Events)
+		eventAPI := api.NewEventHandler(deps.Events, deps.URLPreview)
 		videoAPI := api.NewVideoHandler(deps.Videos)
 		merchAPI := api.NewMerchHandler(deps.Merch)
 		photoAPI := api.NewPhotoHandler(deps.Photos)
@@ -147,6 +148,7 @@ func NewRouter(deps Deps) *gin.Engine {
 		}
 
 		apiGroup.GET("/events", eventAPI.List)
+		apiGroup.GET("/events/preview-ticket", eventAPI.PreviewTicket)
 		apiGroup.GET("/events/:id", eventAPI.Get)
 		apiGroup.GET("/videos", videoAPI.List)
 		apiGroup.GET("/videos/:id", videoAPI.Get)

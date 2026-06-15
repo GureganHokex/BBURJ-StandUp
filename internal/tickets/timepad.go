@@ -60,7 +60,10 @@ func fetchTimepad(ctx context.Context, client *http.Client, cfg Settings) ([]Eve
 			DescriptionShort string `json:"description_short"`
 			StartsAt         string `json:"starts_at"`
 			URL              string `json:"url"`
-			Location         struct {
+			PosterImage      struct {
+				DefaultURL string `json:"default_url"`
+			} `json:"poster_image"`
+			Location struct {
 				City string `json:"city"`
 			} `json:"location"`
 		} `json:"values"`
@@ -76,13 +79,14 @@ func fetchTimepad(ctx context.Context, client *http.Client, cfg Settings) ([]Eve
 			date, _ = time.Parse("2006-01-02", item.StartsAt)
 		}
 		out = append(out, Event{
-			Source:      SourceTimepad,
-			ExternalID:  fmt.Sprintf("%d", item.ID),
-			Title:       item.Name,
-			Date:        date,
-			City:        strings.TrimSpace(item.Location.City),
-			Description: item.DescriptionShort,
-			TicketURL:   item.URL,
+			Source:         SourceTimepad,
+			ExternalID:     fmt.Sprintf("%d", item.ID),
+			Title:          item.Name,
+			Date:           date,
+			City:           strings.TrimSpace(item.Location.City),
+			Description:    item.DescriptionShort,
+			TicketURL:      item.URL,
+			PosterImageURL: strings.TrimSpace(item.PosterImage.DefaultURL),
 		})
 	}
 	return out, nil
