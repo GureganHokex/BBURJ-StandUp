@@ -107,24 +107,13 @@ func DetectPlatform(rawURL string) models.VideoPlatform {
 }
 
 func EmbedURL(platform models.VideoPlatform, rawURL string) string {
-	lower := strings.ToLower(rawURL)
 	switch platform {
 	case models.PlatformYouTube:
-		if strings.Contains(lower, "youtu.be/") {
-			parts := strings.Split(lower, "youtu.be/")
-			if len(parts) > 1 {
-				id := strings.Split(parts[1], "?")[0]
-				return "https://www.youtube.com/embed/" + id
-			}
-		}
-		if strings.Contains(lower, "v=") {
-			parts := strings.Split(lower, "v=")
-			if len(parts) > 1 {
-				id := strings.Split(parts[1], "&")[0]
-				return "https://www.youtube.com/embed/" + id
-			}
+		if id := youtubeVideoID(rawURL); id != "" {
+			return "https://www.youtube-nocookie.com/embed/" + id
 		}
 	case models.PlatformRuTube:
+		lower := strings.ToLower(rawURL)
 		if strings.Contains(lower, "/video/") {
 			parts := strings.Split(lower, "/video/")
 			if len(parts) > 1 {
@@ -136,4 +125,50 @@ func EmbedURL(platform models.VideoPlatform, rawURL string) string {
 		return rawURL
 	}
 	return rawURL
+}
+
+func youtubeVideoID(rawURL string) string {
+	rawURL = strings.TrimSpace(rawURL)
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return ""
+	}
+
+	host := strings.ToLower(parsed.Host)
+	host = strings.TrimPrefix(host, "www.")
+	host = strings.TrimPrefix(host, "m.")
+
+	if host == "youtu.be" {
+		return trimYouTubeID(strings.TrimPrefix(parsed.Path, "/"))
+	}
+
+	if host != "youtube.com" && host != "youtube-nocookie.com" {
+		return ""
+	}
+
+	if v := parsed.Query().Get("v"); v != "" {
+		return trimYouTubeID(v)
+	}
+
+	segments := strings.Split(strings.Trim(parsed.Path, "/"), "/")
+	if len(segments) < 2 {
+		return ""
+	}
+
+	switch segments[0] {
+	case "embed", "shorts", "live", "v":
+		return trimYouTubeID(segments[1])
+	default:
+		return ""
+	}
+}
+
+func trimYouTubeID(id string) string {
+	id = strings.Split(id, "?")[0]
+	id = strings.Split(id, "&")[0]
+	id = strings.Trim(id, "/")
+	if len(id) != 11 {
+		return ""
+	}
+	return id
 }
