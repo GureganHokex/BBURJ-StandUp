@@ -33,13 +33,11 @@
       {{if .Settings.AboutExtra}}<p>{{.Settings.AboutExtra}}</p>{{end}}
       <a href="/events" class="link-gold">БЛИЖАЙШИЕ ВЫСТУПЛЕНИЯ →</a>
     </div>
+    {{if .Settings.PortraitImageURL}}
     <div class="photo-taped">
-      {{if .Settings.PortraitImageURL}}
       <img src="{{.Settings.PortraitImageURL}}" alt="Большой Буржинский" class="photo-taped-img">
-      {{else}}
-      <div class="photo-taped-inner">ФОТО КОМИКА</div>
-      {{end}}
     </div>
+    {{end}}
   </div>
 </section>
 
@@ -48,18 +46,15 @@
     <h2 class="section-title">ВИДЕО</h2>
     <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="section-link section-link--gold">СМОТРЕТЬ НА YOUTUBE →</a>
   </div>
+  {{if .FeaturedVideo}}
   <div class="video-frame-worn">
-    {{if .FeaturedVideo}}
     <div class="video-feature">
       <iframe src="{{.FeaturedVideo.EmbedURL}}" title="{{.FeaturedVideo.Title}}" allowfullscreen loading="lazy"></iframe>
     </div>
-    {{else}}
-    <div class="video-feature">
-      <div class="video-placeholder">Добавь видео в админке</div>
-      <div class="video-play-overlay"><span>▶</span></div>
-    </div>
-    {{end}}
   </div>
+  {{else}}
+  <p class="section-empty">Скоро появится.</p>
+  {{end}}
 </section>
 
 <section class="section" id="merch">
@@ -76,7 +71,7 @@
         <img src="{{.ImageURL}}" alt="{{.Title}}" loading="lazy">
       </a>
       {{else}}
-      <div class="merch-card-placeholder">Нет фото</div>
+      <div class="merch-card-placeholder" aria-hidden="true"></div>
       {{end}}
       <div class="merch-card-body">
         <h3 class="merch-card-title">{{.Title}}</h3>
@@ -110,12 +105,7 @@
     {{end}}
   </div>
   {{else}}
-  <div class="film-strip">
-    <div class="film-frame"></div>
-    <div class="film-frame"></div>
-    <div class="film-frame"></div>
-  </div>
-  <p style="color:var(--text-muted);margin-top:1rem;font-size:0.9rem">Загрузите фото в админке → Photos</p>
+  <p class="section-empty">Скоро появится.</p>
   {{end}}
 </section>
 

@@ -11,7 +11,7 @@
       {{if .ImageURL}}
       <img src="{{.ImageURL}}" alt="{{.Title}}" loading="lazy">
       {{else}}
-      <div class="merch-card-placeholder">Нет фото</div>
+      <div class="merch-card-placeholder" aria-hidden="true"></div>
       {{end}}
       <div class="merch-card-body">
         <h2 class="merch-card-title">{{.Title}}</h2>
@@ -27,7 +27,7 @@
     {{end}}
   </div>
   {{else}}
-  <p class="section-empty">Мерч скоро в продаже. Добавьте товары в админке → Merch.</p>
+  <p class="section-empty">Мерч скоро в продаже — загляни позже.</p>
   {{end}}
 </div>
 {{end}}
