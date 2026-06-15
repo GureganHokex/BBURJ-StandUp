@@ -21,6 +21,9 @@
       <input name="{{.Name}}" type="hidden" class="upload-hidden-url" {{if .Required}}required{{end}}>
       {{else if eq .Type "textarea"}}
       <textarea name="{{.Name}}" rows="4" class="w-full border border-slate-300 rounded px-3 py-2"></textarea>
+      {{else if eq .Type "price_rub"}}
+      <input name="{{.Name}}" type="text" inputmode="decimal" placeholder="например 1990 или 1990,50" {{if .Required}}required{{end}} class="w-full border border-slate-300 rounded px-3 py-2">
+      <p class="text-xs text-slate-500 mt-1">Рубли и копейки — через запятую или точку</p>
       {{else}}
       <input name="{{.Name}}" type="{{.Type}}" {{if .Required}}required{{end}} class="w-full border border-slate-300 rounded px-3 py-2">
       {{end}}

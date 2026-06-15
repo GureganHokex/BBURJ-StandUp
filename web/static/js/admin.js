@@ -11,6 +11,33 @@
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function formatKopecksAsRubles(kopecks) {
+    const total = Number(kopecks) || 0;
+    const rub = Math.floor(total / 100);
+    const kop = total % 100;
+    if (kop === 0) return String(rub);
+    return `${rub},${String(kop).padStart(2, '0')}`;
+  }
+
+  function formatKopecksDisplay(kopecks) {
+    const total = Number(kopecks) || 0;
+    const rub = Math.floor(total / 100);
+    const kop = total % 100;
+    if (kop === 0) return `${rub} ₽`;
+    return `${rub},${String(kop).padStart(2, '0')} ₽`;
+  }
+
+  function parseRublesToKopecks(raw) {
+    const normalized = String(raw).trim().replace(/\s/g, '').replace(',', '.');
+    if (!normalized) return 0;
+    const match = normalized.match(/^(\d+)(?:\.(\d{0,2}))?$/);
+    if (!match) return NaN;
+    const rub = parseInt(match[1], 10) || 0;
+    const frac = (match[2] || '').padEnd(2, '0').slice(0, 2);
+    const kop = frac ? parseInt(frac, 10) || 0 : 0;
+    return rub * 100 + kop;
+  }
+
   /* ——— Image upload (drag & drop) ——— */
   function initDropzones(root) {
     root.querySelectorAll('.upload-dropzone:not([data-bound])').forEach((zone) => {
@@ -125,7 +152,7 @@
       .map((key) => {
         let val = row[key];
         if (key === 'date' && val) val = new Date(val).toLocaleString('ru-RU');
-        if (key === 'price' && val != null) val = (val / 100).toFixed(0) + ' ₽';
+        if (key === 'price' && val != null) val = formatKopecksDisplay(val);
         if (key === 'image_url' && val) {
           return `<td class="px-4 py-3"><img src="${escapeHtml(String(val))}" alt="" class="h-10 w-10 object-cover rounded border"></td>`;
         }
@@ -212,6 +239,9 @@
             if (name === 'date' && val) {
               val = new Date(val).toISOString().slice(0, 16);
             }
+            if (name === 'price' && val != null && el.closest('.form-field')?.dataset.fieldType === 'price_rub') {
+              val = formatKopecksAsRubles(val);
+            }
             if (val != null) el.value = val;
           });
           initDropzones(form);
@@ -222,12 +252,23 @@
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
+      const errBox = document.getElementById('form-errors');
       const body = {};
-      form.querySelectorAll('[name]').forEach((el) => {
+      for (const el of form.querySelectorAll('[name]')) {
+        const fieldType = el.closest('.form-field')?.dataset.fieldType;
         let v = el.value;
-        if (el.type === 'number') v = parseInt(v, 10) || 0;
+        if (fieldType === 'price_rub') {
+          v = parseRublesToKopecks(v);
+          if (Number.isNaN(v)) {
+            errBox.classList.remove('hidden');
+            errBox.innerHTML = '<div><strong>price</strong>: укажите цену в рублях, например 1990 или 1990,50</div>';
+            return;
+          }
+        } else if (el.type === 'number') {
+          v = parseInt(v, 10) || 0;
+        }
         body[el.name] = v;
-      });
+      }
       const method = recordId > 0 ? 'PUT' : 'POST';
       const url = recordId > 0 ? `${document.body.dataset.apiPath}/${recordId}` : document.body.dataset.apiPath;
       fetch(url, {
@@ -238,7 +279,6 @@
       })
         .then(async (r) => {
           const data = await r.json().catch(() => ({}));
-          const errBox = document.getElementById('form-errors');
           if (!r.ok) {
             errBox.classList.remove('hidden');
             const errs = data.errors || { error: data.error || 'Ошибка сохранения' };

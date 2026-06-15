@@ -34,7 +34,7 @@ var modelFields = map[string][]fieldMeta{
 	"merch": {
 		{Name: "title", Label: "Название", Type: "text", Required: true},
 		{Name: "description", Label: "Описание", Type: "textarea"},
-		{Name: "price", Label: "Цена (копейки)", Type: "number", Required: true},
+		{Name: "price", Label: "Цена (₽)", Type: "price_rub", Required: true},
 		{Name: "image_url", Label: "Изображение", Type: "image_upload"},
 		{Name: "buy_url", Label: "Ссылка на покупку", Type: "url"},
 	},
