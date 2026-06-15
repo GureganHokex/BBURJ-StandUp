@@ -722,8 +722,17 @@ body.event-modal-open {
 .about-inner {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 1.5rem;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
   align-items: start;
+  max-width: 56rem;
+}
+
+#about .section-title {
+  margin-bottom: 1.25rem;
+}
+
+#video .video-frame-worn {
+  max-width: 56rem;
 }
 
 .video-frame-worn {
@@ -739,7 +748,7 @@ body.event-modal-open {
 .video-feature {
   position: relative;
   aspect-ratio: 16/9;
-  max-height: 28rem;
+  max-height: none;
   background: #000;
   border: none;
   overflow: hidden;

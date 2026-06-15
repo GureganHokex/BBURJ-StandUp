@@ -25,41 +25,40 @@
   {{end}}
 </section>
 
-<section class="section section-duo">
-  <div class="duo-col duo-video" id="video">
-    <div class="section-head">
-      <h2 class="section-title">ВИДЕО</h2>
-      <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="section-link section-link--gold">СМОТРЕТЬ НА YOUTUBE →</a>
+<section class="section" id="about">
+  <h2 class="section-title">ОБО МНЕ</h2>
+  <div class="about-inner">
+    <div class="about-text">
+      <p>{{.Settings.AboutText}}</p>
+      {{if .Settings.AboutExtra}}<p>{{.Settings.AboutExtra}}</p>{{end}}
+      <a href="/events" class="link-gold">БЛИЖАЙШИЕ ВЫСТУПЛЕНИЯ →</a>
     </div>
-    <div class="video-frame-worn">
-      {{if .FeaturedVideo}}
-      <div class="video-feature">
-        <iframe src="{{.FeaturedVideo.EmbedURL}}" title="{{.FeaturedVideo.Title}}" allowfullscreen loading="lazy"></iframe>
-      </div>
+    <div class="photo-taped">
+      {{if .Settings.PortraitImageURL}}
+      <img src="{{.Settings.PortraitImageURL}}" alt="Большой Буржинский" class="photo-taped-img">
       {{else}}
-      <div class="video-feature">
-        <div class="video-placeholder">Добавь видео в админке</div>
-        <div class="video-play-overlay"><span>▶</span></div>
-      </div>
+      <div class="photo-taped-inner">ФОТО КОМИКА</div>
       {{end}}
     </div>
   </div>
-  <div class="duo-col duo-about" id="about">
-    <h2 class="section-title">ОБО МНЕ</h2>
-    <div class="about-inner">
-      <div class="about-text">
-        <p>{{.Settings.AboutText}}</p>
-        {{if .Settings.AboutExtra}}<p>{{.Settings.AboutExtra}}</p>{{end}}
-        <a href="/events" class="link-gold">БЛИЖАЙШИЕ ВЫСТУПЛЕНИЯ →</a>
-      </div>
-      <div class="photo-taped">
-        {{if .Settings.PortraitImageURL}}
-        <img src="{{.Settings.PortraitImageURL}}" alt="Большой Буржинский" class="photo-taped-img">
-        {{else}}
-        <div class="photo-taped-inner">ФОТО КОМИКА</div>
-        {{end}}
-      </div>
+</section>
+
+<section class="section" id="video">
+  <div class="section-head">
+    <h2 class="section-title">ВИДЕО</h2>
+    <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="section-link section-link--gold">СМОТРЕТЬ НА YOUTUBE →</a>
+  </div>
+  <div class="video-frame-worn">
+    {{if .FeaturedVideo}}
+    <div class="video-feature">
+      <iframe src="{{.FeaturedVideo.EmbedURL}}" title="{{.FeaturedVideo.Title}}" allowfullscreen loading="lazy"></iframe>
     </div>
+    {{else}}
+    <div class="video-feature">
+      <div class="video-placeholder">Добавь видео в админке</div>
+      <div class="video-play-overlay"><span>▶</span></div>
+    </div>
+    {{end}}
   </div>
 </section>
 
