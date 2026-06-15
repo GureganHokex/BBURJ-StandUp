@@ -1,4 +1,9 @@
 {{define "admin/list_content"}}
+<div id="admin-page"
+  data-page-mode="list"
+  data-model-slug="{{.Model.Slug}}"
+  data-api-path="{{.Model.APIPath}}"
+  data-columns="{{range $i, $c := .Columns}}{{if $i}},{{end}}{{$c.Key}}{{end}}">
 <div class="mb-4 flex justify-between items-center">
   <p class="text-sm text-slate-600">Управление: {{.Model.Name}}</p>
   <a href="/admin/{{.Model.Slug}}/new" class="inline-flex items-center px-4 py-2 bg-green-700 text-white text-sm font-medium rounded hover:bg-green-800">+ Add</a>
@@ -19,10 +24,5 @@
     </tbody>
   </table>
 </div>
-<script>
-  document.body.dataset.modelSlug = "{{.Model.Slug}}";
-  document.body.dataset.apiPath = "{{.Model.APIPath}}";
-  document.body.dataset.columns = '{{range $i, $c := .Columns}}{{if $i}},{{end}}{{$c.Key}}{{end}}';
-  document.body.dataset.pageMode = "list";
-</script>
+</div>
 {{end}}

@@ -1,5 +1,7 @@
 (function () {
   const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+  const page = document.getElementById('admin-page');
+  const pageData = page ? page.dataset : document.body.dataset;
 
   function apiHeaders(json) {
     const h = { 'X-CSRF-Token': csrf };
@@ -135,12 +137,15 @@
   }
 
   const tableBody = document.getElementById('admin-table-body');
-  if (tableBody && document.body.dataset.pageMode === 'list' && document.body.dataset.apiPath) {
-    fetch(document.body.dataset.apiPath, { headers: apiHeaders(false), credentials: 'same-origin' })
-      .then((r) => r.json())
+  if (tableBody && pageData.pageMode === 'list' && pageData.apiPath) {
+    fetch(pageData.apiPath, { headers: apiHeaders(false), credentials: 'same-origin' })
+      .then((r) => {
+        if (!r.ok) throw new Error('http ' + r.status);
+        return r.json();
+      })
       .then((payload) => {
-        const cols = (document.body.dataset.columns || '').split(',').filter(Boolean);
-        const slug = document.body.dataset.modelSlug;
+        const cols = (pageData.columns || '').split(',').filter(Boolean);
+        const slug = pageData.modelSlug;
         tableBody.innerHTML = (payload.data || [])
           .map((row) => renderRow(slug, row, cols))
           .join('') || '<tr><td colspan="10" class="px-4 py-6 text-slate-500">Нет записей</td></tr>';
@@ -178,7 +183,7 @@
     if (!btn) return;
     const id = btn.dataset.deleteId;
     if (!confirm('Удалить запись #' + id + '?')) return;
-    fetch(`${document.body.dataset.apiPath}/${id}`, {
+    fetch(`${pageData.apiPath}/${id}`, {
       method: 'DELETE',
       headers: apiHeaders(false),
       credentials: 'same-origin',
@@ -186,7 +191,7 @@
   });
 
   const settingsForm = document.getElementById('settings-form');
-  if (settingsForm && document.body.dataset.pageMode === 'settings') {
+  if (settingsForm && pageData.pageMode === 'settings') {
     fetch('/api/settings', { headers: apiHeaders(false), credentials: 'same-origin' })
       .then((r) => r.json())
       .then((payload) => {
@@ -223,10 +228,10 @@
   }
 
   const form = document.getElementById('admin-form');
-  if (form && document.body.dataset.apiPath && document.body.dataset.pageMode !== 'settings') {
-    const recordId = parseInt(document.body.dataset.recordId || '0', 10);
+  if (form && pageData.apiPath && pageData.pageMode !== 'settings' && pageData.pageMode !== 'account') {
+    const recordId = parseInt(pageData.recordId || '0', 10);
     if (recordId > 0) {
-      fetch(`${document.body.dataset.apiPath}/${recordId}`, {
+      fetch(`${pageData.apiPath}/${recordId}`, {
         headers: apiHeaders(false),
         credentials: 'same-origin',
       })
@@ -270,7 +275,7 @@
         body[el.name] = v;
       }
       const method = recordId > 0 ? 'PUT' : 'POST';
-      const url = recordId > 0 ? `${document.body.dataset.apiPath}/${recordId}` : document.body.dataset.apiPath;
+      const url = recordId > 0 ? `${pageData.apiPath}/${recordId}` : pageData.apiPath;
       fetch(url, {
         method,
         headers: apiHeaders(true),
@@ -285,13 +290,13 @@
             showFieldErrors(errBox, errs);
             return;
           }
-          window.location.href = `/admin/${document.body.dataset.modelSlug}`;
+          window.location.href = `/admin/${pageData.modelSlug}`;
         });
     });
   }
 
   const accountForm = document.getElementById('account-form');
-  if (accountForm && document.body.dataset.pageMode === 'account') {
+  if (accountForm && pageData.pageMode === 'account') {
     accountForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const errBox = document.getElementById('form-errors');

@@ -1,4 +1,9 @@
 {{define "admin/form_content"}}
+<div id="admin-page"
+  data-page-mode="form"
+  data-model-slug="{{.Model.Slug}}"
+  data-api-path="{{.Model.APIPath}}"
+  data-record-id="{{.ID}}">
 <div class="max-w-xl bg-white rounded-lg border border-slate-200 p-6">
   <div id="form-errors" class="mb-4 hidden text-sm text-red-700 bg-red-50 border border-red-200 rounded p-3"></div>
   <form id="admin-form" class="space-y-4">
@@ -35,10 +40,5 @@
     </div>
   </form>
 </div>
-<script>
-  document.body.dataset.modelSlug = "{{.Model.Slug}}";
-  document.body.dataset.apiPath = "{{.Model.APIPath}}";
-  document.body.dataset.recordId = "{{.ID}}";
-  document.body.dataset.pageMode = "form";
-</script>
+</div>
 {{end}}
