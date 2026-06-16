@@ -934,9 +934,14 @@ body.menu-open {
   display: block;
 }
 
-.film-frame-photo {
-  background-size: cover;
-  background-position: center;
+.photo-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
 }
 
 /* Photo gallery + lightbox */
@@ -968,8 +973,6 @@ body.menu-open {
   padding: 0;
   border: 2px solid #333;
   background-color: #252320;
-  background-size: cover;
-  background-position: center;
   cursor: zoom-in;
   position: relative;
   overflow: hidden;

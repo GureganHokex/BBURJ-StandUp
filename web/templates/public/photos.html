@@ -6,9 +6,10 @@
   {{if .Photos}}
   <div class="photo-gallery photo-gallery--grid" data-lightbox-gallery>
     {{range .Photos}}
-    <button type="button" class="photo-thumb" style="background-image:url('{{.ImageURL}}')"
+    <button type="button" class="photo-thumb"
       data-lightbox-src="{{.ImageURL}}" data-lightbox-caption="{{.Title}}"
       aria-label="Открыть фото{{if .Title}}: {{.Title}}{{end}}">
+      <img src="{{.ImageURL}}" alt="" class="photo-thumb-img" loading="lazy" decoding="async">
       <span class="photo-thumb-icon" aria-hidden="true">+</span>
     </button>
     {{end}}

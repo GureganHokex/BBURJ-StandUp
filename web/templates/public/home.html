@@ -97,9 +97,10 @@
   {{if .Photos}}
   <div class="film-strip photo-gallery" data-lightbox-gallery>
     {{range .Photos}}
-    <button type="button" class="photo-thumb film-frame-photo" style="background-image:url('{{.ImageURL}}')"
+    <button type="button" class="photo-thumb film-frame-photo"
       data-lightbox-src="{{.ImageURL}}" data-lightbox-caption="{{.Title}}"
       aria-label="Открыть фото{{if .Title}}: {{.Title}}{{end}}">
+      <img src="{{.ImageURL}}" alt="" class="photo-thumb-img" loading="lazy" decoding="async">
       <span class="photo-thumb-icon" aria-hidden="true">+</span>
     </button>
     {{end}}
