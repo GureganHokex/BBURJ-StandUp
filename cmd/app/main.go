@@ -63,7 +63,13 @@ func main() {
 	sessions := session.NewStore(sessionRepo)
 	sessions.CleanupExpired()
 	authService := services.NewAuthService(adminRepo, sessions)
-	eventService := services.NewEventService(eventRepo)
+
+	uploader, err := storage.NewUploader(cfg.UploadDir, cfg.MaxUploadMB)
+	if err != nil {
+		log.Fatalf("uploader: %v", err)
+	}
+
+	eventService := services.NewEventService(eventRepo, uploader)
 	videoService := services.NewVideoService(videoRepo)
 	merchService := services.NewMerchService(merchRepo)
 	photoService := services.NewPhotoService(photoRepo)
@@ -75,11 +81,6 @@ func main() {
 	}
 	if _, err := settingsService.SeedDefaults(); err != nil {
 		log.Fatalf("seed settings: %v", err)
-	}
-
-	uploader, err := storage.NewUploader(cfg.UploadDir, cfg.MaxUploadMB)
-	if err != nil {
-		log.Fatalf("uploader: %v", err)
 	}
 
 	router := handlers.NewRouter(handlers.Deps{

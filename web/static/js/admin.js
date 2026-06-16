@@ -149,13 +149,13 @@
   }
 
   function updateAdminEventPreview(form) {
-    const bg = document.getElementById('admin-event-preview-bg');
+    const posterImg = document.getElementById('admin-event-preview-poster');
     const day = document.getElementById('admin-event-preview-day');
     const meta = document.getElementById('admin-event-preview-meta');
     const city = document.getElementById('admin-event-preview-city');
     const title = document.getElementById('admin-event-preview-title');
     const desc = document.getElementById('admin-event-preview-desc');
-    if (!bg || !form) return;
+    if (!form) return;
 
     const dateVal = form.querySelector('[name="date"]')?.value || '';
     const cityVal = (form.querySelector('[name="city"]')?.value || '').trim();
@@ -172,23 +172,28 @@
       desc.classList.toggle('hidden', !descVal);
     }
 
-    if (posterVal) {
-      bg.style.backgroundImage = `linear-gradient(180deg, rgba(10, 10, 11, 0.2) 0%, rgba(10, 10, 11, 0.85) 100%), radial-gradient(ellipse at 85% 15%, rgba(217, 173, 42, 0.15) 0%, transparent 45%), url("${posterVal.replace(/"/g, '\\"')}")`;
-    } else {
-      bg.style.backgroundImage = '';
+    if (posterImg) {
+      if (posterVal) {
+        posterImg.src = posterVal;
+        posterImg.classList.remove('hidden');
+      } else {
+        posterImg.removeAttribute('src');
+        posterImg.classList.add('hidden');
+      }
     }
   }
 
   function setPosterURL(form, url) {
     const hidden = form.querySelector('[name="poster_image_url"]');
-    const manual = document.getElementById('poster-url-manual');
     const previewWrap = hidden?.closest('.form-field')?.querySelector('.upload-preview-wrap');
     const previewImg = previewWrap?.querySelector('.upload-preview');
     if (hidden) hidden.value = url || '';
-    if (manual) manual.value = url || '';
     if (url && previewWrap && previewImg) {
       previewImg.src = url;
       previewWrap.classList.remove('hidden');
+    } else if (previewWrap) {
+      previewWrap.classList.add('hidden');
+      if (previewImg) previewImg.removeAttribute('src');
     }
     updateAdminEventPreview(form);
   }
@@ -214,16 +219,40 @@
       previewBtn.addEventListener('click', () => fetchTicketPagePreview(form, previewStatus, false, true));
     }
 
-    const ticketURL = form.querySelector('[name="ticket_url"]');
-    if (ticketURL) {
-      ticketURL.addEventListener('blur', () => {
-        const url = ticketURL.value.trim();
-        if (!url || form.querySelector('[name="poster_image_url"]')?.value) return;
-        fetchTicketPagePreview(form, previewStatus, true);
-      });
+    const posterImportBtn = document.getElementById('poster-import-btn');
+    const posterImportStatus = document.getElementById('poster-import-status');
+    if (posterImportBtn) {
+      posterImportBtn.addEventListener('click', () => importPosterFromTicket(form, posterImportStatus));
     }
 
     updateAdminEventPreview(form);
+  }
+
+  async function importPosterFromTicket(form, statusEl) {
+    const ticketURL = form.querySelector('[name="ticket_url"]')?.value?.trim();
+    if (!ticketURL) {
+      if (statusEl) statusEl.textContent = 'Сначала укажите ссылку на билеты';
+      return;
+    }
+    if (statusEl) statusEl.textContent = 'Загружаем постер на сайт…';
+    try {
+      const r = await fetch(`/api/events/import-poster?url=${encodeURIComponent(ticketURL)}`, {
+        headers: apiHeaders(false),
+        credentials: 'same-origin',
+      });
+      const payload = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        if (statusEl) statusEl.textContent = payload.error || 'Не удалось подтянуть постер';
+        return;
+      }
+      const url = payload.data?.url;
+      if (url) {
+        setPosterURL(form, url);
+        if (statusEl) statusEl.textContent = 'Постер сохранён на сайте';
+      }
+    } catch {
+      if (statusEl) statusEl.textContent = 'Сеть недоступна';
+    }
   }
 
   async function fetchTicketPagePreview(form, statusEl, silent, force) {
@@ -244,7 +273,6 @@
         if (statusEl) statusEl.textContent = payload.error || 'Не удалось получить данные со страницы';
         return;
       }
-      if (data.poster_image_url) setPosterURL(form, data.poster_image_url);
       const titleEl = form.querySelector('[name="title"]');
       const descEl = form.querySelector('[name="description"]');
       const cityEl = form.querySelector('[name="city"]');
@@ -260,9 +288,9 @@
       }
       updateAdminEventPreview(form);
       if (statusEl) {
-        const filled = [data.title, data.description, data.city, data.date, data.poster_image_url].filter(Boolean).length;
+        const filled = [data.title, data.description, data.city, data.date].filter(Boolean).length;
         statusEl.textContent = filled
-          ? 'Данные подтянуты — проверьте и при необходимости исправьте'
+          ? 'Текст подтянут — проверьте и при необходимости исправьте'
           : 'На странице не найдено данных для импорта';
       }
     } catch {
@@ -419,8 +447,6 @@
           }
           initDropzones(form);
           if (pageData.pageMode === 'event-form') {
-            const manual = document.getElementById('poster-url-manual');
-            if (manual && data.poster_image_url) manual.value = data.poster_image_url;
             updateAdminEventPreview(form);
           }
         });
@@ -558,11 +584,7 @@
     }
     set('ticket_source', item.source || 'manual');
     set('external_id', item.external_id || '');
-    if (item.poster_image_url) {
-      setPosterURL(form, item.poster_image_url);
-    } else {
-      updateAdminEventPreview(form);
-    }
+    updateAdminEventPreview(form);
   }
 
   const accountForm = document.getElementById('account-form');

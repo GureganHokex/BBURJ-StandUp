@@ -120,7 +120,7 @@ func NewRouter(deps Deps) *gin.Engine {
 	apiGroup.Use(middleware.AdminAuth(deps.Auth))
 	apiGroup.Use(csrf.EnsureToken())
 	{
-		eventAPI := api.NewEventHandler(deps.Events, deps.URLPreview)
+		eventAPI := api.NewEventHandler(deps.Events, deps.URLPreview, deps.Uploader)
 		videoAPI := api.NewVideoHandler(deps.Videos)
 		merchAPI := api.NewMerchHandler(deps.Merch)
 		photoAPI := api.NewPhotoHandler(deps.Photos)
@@ -154,6 +154,7 @@ func NewRouter(deps Deps) *gin.Engine {
 
 		apiGroup.GET("/events", eventAPI.List)
 		apiGroup.GET("/events/preview-ticket", eventAPI.PreviewTicket)
+		apiGroup.GET("/events/import-poster", eventAPI.ImportPoster)
 		apiGroup.GET("/events/:id", eventAPI.Get)
 		apiGroup.GET("/videos", videoAPI.List)
 		apiGroup.GET("/videos/:id", videoAPI.Get)

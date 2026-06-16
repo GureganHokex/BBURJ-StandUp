@@ -1,12 +1,14 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"strings"
 	"time"
 
 	"github.com/burj/comic/internal/models"
 	"github.com/burj/comic/internal/repository"
+	"github.com/burj/comic/internal/storage"
 	"gorm.io/gorm"
 )
 
@@ -24,11 +26,12 @@ type EventInput struct {
 }
 
 type EventService struct {
-	repo *repository.EventRepository
+	repo     *repository.EventRepository
+	uploader *storage.Uploader
 }
 
-func NewEventService(repo *repository.EventRepository) *EventService {
-	return &EventService{repo: repo}
+func NewEventService(repo *repository.EventRepository, uploader *storage.Uploader) *EventService {
+	return &EventService{repo: repo, uploader: uploader}
 }
 
 func (s *EventService) List(limit, offset int, upcomingOnly bool) ([]models.Event, int64, error) {
@@ -59,13 +62,17 @@ func (s *EventService) Create(input EventInput) (*models.Event, FieldErrors, err
 	}
 
 	source := normalizeTicketSource(input.TicketSource)
+	posterURL, err := s.mirrorPoster(context.Background(), input.PosterImageURL)
+	if err != nil {
+		return nil, nil, err
+	}
 	event := &models.Event{
 		Title:          input.Title,
 		Date:           input.Date,
 		City:           input.City,
 		Description:    input.Description,
 		TicketURL:      input.TicketURL,
-		PosterImageURL: input.PosterImageURL,
+		PosterImageURL: posterURL,
 		TicketSource:   source,
 		ExternalID:     stringsTrimExternal(input.ExternalID, source),
 	}
@@ -101,7 +108,11 @@ func (s *EventService) Update(id uint, input EventInput) (*models.Event, FieldEr
 	event.City = input.City
 	event.Description = input.Description
 	event.TicketURL = input.TicketURL
-	event.PosterImageURL = input.PosterImageURL
+	posterURL, err := s.mirrorPoster(context.Background(), input.PosterImageURL)
+	if err != nil {
+		return nil, nil, err
+	}
+	event.PosterImageURL = posterURL
 	event.TicketSource = source
 	event.ExternalID = externalID
 
@@ -186,4 +197,11 @@ func NormalizeEventsForDisplay(events []models.Event) []models.Event {
 		NormalizeEventForDisplay(&events[i])
 	}
 	return events
+}
+
+func (s *EventService) mirrorPoster(ctx context.Context, posterURL string) (string, error) {
+	if s.uploader == nil {
+		return strings.TrimSpace(posterURL), nil
+	}
+	return s.uploader.ImportFromURL(ctx, posterURL)
 }

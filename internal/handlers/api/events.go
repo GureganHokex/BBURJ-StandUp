@@ -6,16 +6,18 @@ import (
 	"strings"
 
 	"github.com/burj/comic/internal/services"
+	"github.com/burj/comic/internal/storage"
 	"github.com/gin-gonic/gin"
 )
 
 type EventHandler struct {
-	service *services.EventService
-	preview *services.URLPreviewService
+	service  *services.EventService
+	preview  *services.URLPreviewService
+	uploader *storage.Uploader
 }
 
-func NewEventHandler(service *services.EventService, preview *services.URLPreviewService) *EventHandler {
-	return &EventHandler{service: service, preview: preview}
+func NewEventHandler(service *services.EventService, preview *services.URLPreviewService, uploader *storage.Uploader) *EventHandler {
+	return &EventHandler{service: service, preview: preview, uploader: uploader}
 }
 
 func (h *EventHandler) List(c *gin.Context) {
@@ -143,6 +145,39 @@ func (h *EventHandler) PreviewTicket(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, ItemResponse[services.PagePreview]{Data: preview})
+}
+
+func (h *EventHandler) ImportPoster(c *gin.Context) {
+	rawURL := strings.TrimSpace(c.Query("url"))
+	if rawURL == "" {
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "url is required"})
+		return
+	}
+
+	posterURL, err := h.preview.FetchPosterImage(c.Request.Context(), rawURL)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrPreviewURLInvalid):
+			c.JSON(http.StatusBadRequest, ErrorResponse{Error: "invalid url"})
+		case errors.Is(err, services.ErrPreviewURLBlocked):
+			c.JSON(http.StatusBadRequest, ErrorResponse{Error: "url is not allowed"})
+		case errors.Is(err, services.ErrPreviewNoImage):
+			c.JSON(http.StatusNotFound, ErrorResponse{Error: "poster image not found on page"})
+		default:
+			writeInternalError(c, appConfig(c), err)
+		}
+		return
+	}
+
+	localURL, err := h.uploader.ImportFromURL(c.Request.Context(), posterURL)
+	if err != nil {
+		writeInternalError(c, appConfig(c), err)
+		return
+	}
+
+	c.JSON(http.StatusOK, ItemResponse[map[string]string]{
+		Data: map[string]string{"url": localURL},
+	})
 }
 
 func previewHasData(preview services.PagePreview) bool {

@@ -6,7 +6,11 @@
   data-event-date="{{formatEventDate .Date}}"
   data-event-poster="{{attr .PosterImageURL}}"
   data-event-ticket="{{attr .TicketURL}}">
-  <div class="event-card-bg" aria-hidden="true"></div>
+  <div class="event-card-bg" aria-hidden="true">
+    {{if .PosterImageURL}}
+    <img src="{{.PosterImageURL}}" alt="" class="event-card-poster" loading="lazy" decoding="async">
+    {{end}}
+  </div>
   <div class="event-card-body">
     <div class="event-date-row">
       <span class="event-day">{{formatEventDay .Date}}</span>
