@@ -64,6 +64,11 @@ func NewRouter(deps Deps) *gin.Engine {
 		c.String(http.StatusOK, "ok")
 	})
 
+	r.GET("/yandex_30040fe237d3d610.html", func(c *gin.Context) {
+		c.Header("Content-Type", "text/html; charset=UTF-8")
+		c.String(http.StatusOK, "<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n</head>\n<body>Verification: 30040fe237d3d610</body>\n</html>")
+	})
+
 	pub := r.Group("/")
 	{
 		home := public.NewHomeHandler(deps.Events, deps.Videos, deps.Photos, deps.Merch, deps.Settings, renderer)
