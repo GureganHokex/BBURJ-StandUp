@@ -7,23 +7,12 @@ WORKDIR /app
 
 ENV GOPROXY=https://proxy.golang.org,https://goproxy.io,direct
 
-RUN apk add --no-cache git curl
+RUN apk add --no-cache git
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-
-# Build admin Tailwind CSS (no CDN at runtime).
-RUN ARCH="$(uname -m)" \
-	&& case "$ARCH" in \
-		x86_64) TW_ARCH="x64" ;; \
-		aarch64) TW_ARCH="arm64" ;; \
-		*) echo "unsupported arch: $ARCH" && exit 1 ;; \
-	esac \
-	&& curl -fsSL "https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.17/tailwindcss-linux-${TW_ARCH}" -o /tmp/tailwindcss \
-	&& chmod +x /tmp/tailwindcss \
-	&& /tmp/tailwindcss -i web/static/css/admin-input.css -o web/static/css/tailwind.css --minify
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/comic ./cmd/app
 

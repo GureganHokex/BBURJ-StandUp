@@ -19,11 +19,12 @@ func SecurityHeaders(production bool) gin.HandlerFunc {
 		c.Header("X-Permitted-Cross-Domain-Policies", "none")
 		c.Header("Content-Security-Policy", strings.Join([]string{
 			"default-src 'self'",
-			"script-src 'self' https://mc.yandex.ru",
+			"script-src 'self' https://mc.yandex.ru https://yastatic.net",
 			"style-src 'self' https://fonts.googleapis.com",
 			"font-src 'self' https://fonts.gstatic.com",
 			"img-src 'self' data: https:",
-			"frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://mc.yandex.ru",
+			"child-src 'self' blob: https://mc.yandex.ru",
+			"frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com https://mc.yandex.ru",
 			"connect-src 'self' https://mc.yandex.ru wss://mc.yandex.ru",
 			"base-uri 'self'",
 			"form-action 'self'",
