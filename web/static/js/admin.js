@@ -338,12 +338,23 @@
   const settingsForm = document.getElementById('settings-form');
   if (settingsForm && pageData.pageMode === 'settings') {
     fetch('/api/settings', { headers: apiHeaders(false), credentials: 'same-origin' })
-      .then((r) => r.json())
-      .then((payload) => {
+      .then(async (r) => {
+        const payload = await r.json().catch(() => ({}));
+        const errBox = document.getElementById('form-errors');
+        if (!r.ok) {
+          showFieldErrors(errBox, { error: payload.error || 'Не удалось загрузить настройки' });
+          initDropzones(settingsForm);
+          return;
+        }
         const data = payload.data || {};
         settingsForm.querySelectorAll('[name]').forEach((el) => {
           if (data[el.name] != null) el.value = data[el.name];
         });
+        initDropzones(settingsForm);
+      })
+      .catch(() => {
+        const errBox = document.getElementById('form-errors');
+        showFieldErrors(errBox, { error: 'Сеть недоступна' });
         initDropzones(settingsForm);
       });
 

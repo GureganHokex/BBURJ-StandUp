@@ -6,6 +6,7 @@ import (
 
 	"github.com/burj/comic/internal/models"
 	"github.com/burj/comic/internal/repository"
+	"gorm.io/gorm"
 )
 
 type SiteSettingsInput struct {
@@ -53,14 +54,21 @@ func (s *SiteSettingsService) SeedDefaults() (*models.SiteSettings, error) {
 }
 
 func (s *SiteSettingsService) Get() (*models.SiteSettings, error) {
-	return s.repo.Get()
+	settings, err := s.repo.Get()
+	if err == nil {
+		return settings, nil
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return s.SeedDefaults()
+	}
+	return nil, err
 }
 
 func (s *SiteSettingsService) Update(input SiteSettingsInput) (*models.SiteSettings, FieldErrors, error) {
 	if errs := s.validate(input); errs.HasErrors() {
 		return nil, errs, nil
 	}
-	current, err := s.repo.Get()
+	current, err := s.Get()
 	if err != nil {
 		return nil, nil, err
 	}
