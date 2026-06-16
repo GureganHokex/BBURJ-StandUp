@@ -32,6 +32,11 @@ type SettingsRequest struct {
 	TicketscloudOrgID     string `json:"ticketscloud_org_id"`
 	TicketscloudAPIKey    string `json:"ticketscloud_api_key"`
 	EventImportKeywords   string `json:"event_import_keywords"`
+	ShowEvents            bool   `json:"show_events"`
+	ShowVideos            bool   `json:"show_videos"`
+	ShowPhotos            bool   `json:"show_photos"`
+	ShowMerch             bool   `json:"show_merch"`
+	ShowAbout             bool   `json:"show_about"`
 }
 
 func (h *SettingsHandler) Get(c *gin.Context) {
@@ -58,6 +63,8 @@ func (h *SettingsHandler) Update(c *gin.Context) {
 		TimepadOrgID: req.TimepadOrgID, TimepadAPIKey: req.TimepadAPIKey,
 		TicketscloudOrgID: req.TicketscloudOrgID, TicketscloudAPIKey: req.TicketscloudAPIKey,
 		EventImportKeywords: req.EventImportKeywords,
+		ShowEvents: req.ShowEvents, ShowVideos: req.ShowVideos,
+		ShowPhotos: req.ShowPhotos, ShowMerch: req.ShowMerch, ShowAbout: req.ShowAbout,
 	})
 	if err != nil {
 		writeInternalError(c, appConfig(c), err)

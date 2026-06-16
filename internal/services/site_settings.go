@@ -26,6 +26,11 @@ type SiteSettingsInput struct {
 	TicketscloudOrgID     string
 	TicketscloudAPIKey    string
 	EventImportKeywords   string
+	ShowEvents            bool
+	ShowVideos            bool
+	ShowPhotos            bool
+	ShowMerch             bool
+	ShowAbout             bool
 }
 
 type SiteSettingsService struct {
@@ -50,6 +55,11 @@ func (s *SiteSettingsService) SeedDefaults() (*models.SiteSettings, error) {
 		YouTubeHandle:   "@bburj",
 		TelegramHandle:  "@bburj",
 		InstagramHandle: "@bburj",
+		ShowEvents:      true,
+		ShowVideos:      true,
+		ShowPhotos:      true,
+		ShowMerch:       true,
+		ShowAbout:       true,
 	})
 }
 
@@ -86,6 +96,11 @@ func (s *SiteSettingsService) Update(input SiteSettingsInput) (*models.SiteSetti
 	current.TimepadOrgID = input.TimepadOrgID
 	current.TicketscloudOrgID = input.TicketscloudOrgID
 	current.EventImportKeywords = input.EventImportKeywords
+	current.ShowEvents = input.ShowEvents
+	current.ShowVideos = input.ShowVideos
+	current.ShowPhotos = input.ShowPhotos
+	current.ShowMerch = input.ShowMerch
+	current.ShowAbout = input.ShowAbout
 	if strings.TrimSpace(input.TimepadAPIKey) != "" {
 		current.TimepadAPIKey = input.TimepadAPIKey
 	}

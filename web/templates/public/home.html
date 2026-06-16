@@ -9,10 +9,15 @@
   <div class="hero-inner">
     <p class="hero-tag">{{.Settings.HeroTagline}}</p>
     <h1 class="hero-title">БОЛЬШОЙ<br>БУРЖИНСКИЙ</h1>
+    {{if .Settings.ShowVideos}}
     <a href="/videos" class="btn-gold">СМОТРЕТЬ ВИДЕО →</a>
+    {{else if .Settings.YouTubeURL}}
+    <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="btn-gold">СМОТРЕТЬ ВИДЕО →</a>
+    {{end}}
   </div>
 </section>
 
+{{if .Settings.ShowEvents}}
 <section class="section" id="afisha">
   <div class="section-head">
     <h2 class="section-title">АФИША</h2>
@@ -28,14 +33,16 @@
   <p class="section-empty">Скоро новые даты — следи за афишей.</p>
   {{end}}
 </section>
+{{end}}
 
+{{if .Settings.ShowAbout}}
 <section class="section" id="about">
   <h2 class="section-title">ОБО МНЕ</h2>
   <div class="about-inner">
     <div class="about-text">
       <p>{{.Settings.AboutText}}</p>
       {{if .Settings.AboutExtra}}<p>{{.Settings.AboutExtra}}</p>{{end}}
-      <a href="/events" class="link-gold">БЛИЖАЙШИЕ ВЫСТУПЛЕНИЯ →</a>
+      {{if .Settings.ShowEvents}}<a href="/events" class="link-gold">БЛИЖАЙШИЕ ВЫСТУПЛЕНИЯ →</a>{{end}}
     </div>
     {{if .Settings.PortraitImageURL}}
     <div class="photo-taped">
@@ -44,7 +51,9 @@
     {{end}}
   </div>
 </section>
+{{end}}
 
+{{if .Settings.ShowVideos}}
 <section class="section" id="video">
   <div class="section-head">
     <h2 class="section-title">ВИДЕО</h2>
@@ -60,7 +69,9 @@
   <p class="section-empty">Скоро появится.</p>
   {{end}}
 </section>
+{{end}}
 
+{{if .Settings.ShowMerch}}
 <section class="section" id="merch">
   <div class="section-head">
     <h2 class="section-title">МЕРЧ</h2>
@@ -92,7 +103,9 @@
   <p class="section-empty">Мерч скоро в продаже — загляни позже.</p>
   {{end}}
 </section>
+{{end}}
 
+{{if .Settings.ShowPhotos}}
 <section class="section" id="photos">
   <div class="section-head">
     <h2 class="section-title">ФОТО</h2>
@@ -113,6 +126,7 @@
   <p class="section-empty">Скоро появится.</p>
   {{end}}
 </section>
+{{end}}
 
 <section class="social-cta">
   <div class="social-cta-inner">

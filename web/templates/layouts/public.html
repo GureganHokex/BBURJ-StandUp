@@ -20,11 +20,11 @@
         <button type="button" class="site-nav-close" aria-label="Закрыть меню">×</button>
       </div>
       <div class="site-nav-links">
-        <a href="/events" class="{{if eq .Active "events"}}active{{end}}">АФИША</a>
-        <a href="/videos" class="{{if eq .Active "videos"}}active{{end}}">ВИДЕО</a>
-        <a href="/#about" class="{{if eq .Active "about"}}active{{end}}">ОБО МНЕ</a>
-        <a href="/photos" class="{{if eq .Active "photos"}}active{{end}}">ФОТО</a>
-        <a href="/merch" class="{{if eq .Active "merch"}}active{{end}}">МЕРЧ</a>
+        {{if .Settings.ShowEvents}}<a href="/events" class="{{if eq .Active "events"}}active{{end}}">АФИША</a>{{end}}
+        {{if .Settings.ShowVideos}}<a href="/videos" class="{{if eq .Active "videos"}}active{{end}}">ВИДЕО</a>{{end}}
+        {{if .Settings.ShowAbout}}<a href="/#about" class="{{if eq .Active "about"}}active{{end}}">ОБО МНЕ</a>{{end}}
+        {{if .Settings.ShowPhotos}}<a href="/photos" class="{{if eq .Active "photos"}}active{{end}}">ФОТО</a>{{end}}
+        {{if .Settings.ShowMerch}}<a href="/merch" class="{{if eq .Active "merch"}}active{{end}}">МЕРЧ</a>{{end}}
         <a href="/#contacts" class="{{if eq .Active "contacts"}}active{{end}}">КОНТАКТЫ</a>
       </div>
     </nav>

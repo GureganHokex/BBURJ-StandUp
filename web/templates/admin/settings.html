@@ -75,6 +75,32 @@
       </div>
     </fieldset>
     <fieldset class="border border-slate-200 rounded p-4 space-y-3">
+      <legend class="text-sm font-semibold px-1">Разделы на сайте</legend>
+      <p class="text-xs text-slate-500">Снимите галочку, чтобы скрыть раздел на сайте. Данные в админке останутся.</p>
+      <div class="space-y-2">
+        <label class="flex items-center gap-2 text-sm text-slate-700">
+          <input name="show_events" type="checkbox" class="rounded border-slate-300" checked>
+          Афиша
+        </label>
+        <label class="flex items-center gap-2 text-sm text-slate-700">
+          <input name="show_videos" type="checkbox" class="rounded border-slate-300" checked>
+          Видео
+        </label>
+        <label class="flex items-center gap-2 text-sm text-slate-700">
+          <input name="show_photos" type="checkbox" class="rounded border-slate-300" checked>
+          Фото
+        </label>
+        <label class="flex items-center gap-2 text-sm text-slate-700">
+          <input name="show_merch" type="checkbox" class="rounded border-slate-300" checked>
+          Мерч
+        </label>
+        <label class="flex items-center gap-2 text-sm text-slate-700">
+          <input name="show_about" type="checkbox" class="rounded border-slate-300" checked>
+          Обо мне
+        </label>
+      </div>
+    </fieldset>
+    <fieldset class="border border-slate-200 rounded p-4 space-y-3">
       <legend class="text-sm font-semibold px-1">Афиша — агрегаторы билетов</legend>
       <p class="text-xs text-slate-500">Настройте подключение, чтобы в Events импортировать концерты и сразу получать ссылку на покупку билетов.</p>
       <div class="grid grid-cols-2 gap-3">

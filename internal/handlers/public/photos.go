@@ -1,6 +1,7 @@
 package public
 
 import (
+	"github.com/burj/comic/internal/models"
 	"github.com/burj/comic/internal/render"
 	"github.com/burj/comic/internal/services"
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,9 @@ func NewPhotosHandler(photos *services.PhotoService, settings *services.SiteSett
 }
 
 func (h *PhotosHandler) List(c *gin.Context) {
+	if !denyHiddenSection(c, h.settings, func(s *models.SiteSettings) bool { return s.ShowPhotos }) {
+		return
+	}
 	items, _, _ := h.photos.List(100, 0)
 	h.render.Page(c, 200, "public/layout", "public/photos_content", mergeSite(h.settings, gin.H{
 		"Title":     "Фото",

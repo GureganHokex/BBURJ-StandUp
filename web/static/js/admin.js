@@ -363,6 +363,8 @@
     }).then(() => location.reload());
   });
 
+  const SETTINGS_BOOL_FIELDS = ['show_events', 'show_videos', 'show_photos', 'show_merch', 'show_about'];
+
   const settingsForm = document.getElementById('settings-form');
   if (settingsForm && pageData.pageMode === 'settings') {
     fetch('/api/settings', { headers: apiHeaders(false), credentials: 'same-origin' })
@@ -376,7 +378,12 @@
         }
         const data = payload.data || {};
         settingsForm.querySelectorAll('[name]').forEach((el) => {
+          if (SETTINGS_BOOL_FIELDS.includes(el.name)) return;
           if (data[el.name] != null) el.value = data[el.name];
+        });
+        SETTINGS_BOOL_FIELDS.forEach((name) => {
+          const el = settingsForm.querySelector(`[name="${name}"]`);
+          if (el) el.checked = data[name] !== false;
         });
         initDropzones(settingsForm);
       })
@@ -389,7 +396,12 @@
     settingsForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const body = {};
+      SETTINGS_BOOL_FIELDS.forEach((name) => {
+        const el = settingsForm.querySelector(`[name="${name}"]`);
+        body[name] = el ? el.checked : true;
+      });
       settingsForm.querySelectorAll('[name]').forEach((el) => {
+        if (SETTINGS_BOOL_FIELDS.includes(el.name)) return;
         body[el.name] = el.value;
       });
       fetch('/api/settings', {

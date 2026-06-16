@@ -1,6 +1,7 @@
 package public
 
 import (
+	"github.com/burj/comic/internal/models"
 	"github.com/burj/comic/internal/render"
 	"github.com/burj/comic/internal/services"
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,9 @@ func NewEventsHandler(events *services.EventService, settings *services.SiteSett
 }
 
 func (h *EventsHandler) List(c *gin.Context) {
+	if !denyHiddenSection(c, h.settings, func(s *models.SiteSettings) bool { return s.ShowEvents }) {
+		return
+	}
 	items, _, _ := h.events.List(100, 0, false)
 	items = services.NormalizeEventsForDisplay(items)
 	h.render.Page(c, 200, "public/layout", "public/events_content", mergeSite(h.settings, gin.H{

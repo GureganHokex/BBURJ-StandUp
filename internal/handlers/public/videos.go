@@ -23,6 +23,9 @@ func NewVideosHandler(videos *services.VideoService, settings *services.SiteSett
 }
 
 func (h *VideosHandler) List(c *gin.Context) {
+	if !denyHiddenSection(c, h.settings, func(s *models.SiteSettings) bool { return s.ShowVideos }) {
+		return
+	}
 	items, _, _ := h.videos.List(100, 0)
 	views := make([]VideoView, 0, len(items))
 	for _, v := range items {

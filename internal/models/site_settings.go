@@ -20,6 +20,11 @@ type SiteSettings struct {
 	TicketscloudOrgID     string `gorm:"column:ticketscloud_org_id;size:128" json:"ticketscloud_org_id"`
 	TicketscloudAPIKey    string `gorm:"column:ticketscloud_api_key;size:255" json:"-"`
 	EventImportKeywords   string `gorm:"column:event_import_keywords;size:512" json:"event_import_keywords"`
+	ShowEvents            bool   `gorm:"not null;default:true" json:"show_events"`
+	ShowVideos            bool   `gorm:"not null;default:true" json:"show_videos"`
+	ShowPhotos            bool   `gorm:"not null;default:true" json:"show_photos"`
+	ShowMerch             bool   `gorm:"not null;default:true" json:"show_merch"`
+	ShowAbout             bool   `gorm:"not null;default:true" json:"show_about"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 }
