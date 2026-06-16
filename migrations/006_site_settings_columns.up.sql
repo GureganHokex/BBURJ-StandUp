@@ -1,0 +1,20 @@
+-- site_settings may exist from an older partial schema; add any missing columns.
+ALTER TABLE site_settings
+    ADD COLUMN IF NOT EXISTS hero_image_url VARCHAR(512),
+    ADD COLUMN IF NOT EXISTS portrait_image_url VARCHAR(512),
+    ADD COLUMN IF NOT EXISTS hero_tagline VARCHAR(255),
+    ADD COLUMN IF NOT EXISTS about_text TEXT,
+    ADD COLUMN IF NOT EXISTS about_extra TEXT,
+    ADD COLUMN IF NOT EXISTS youtube_url VARCHAR(512),
+    ADD COLUMN IF NOT EXISTS telegram_url VARCHAR(512),
+    ADD COLUMN IF NOT EXISTS instagram_url VARCHAR(512),
+    ADD COLUMN IF NOT EXISTS youtube_handle VARCHAR(128),
+    ADD COLUMN IF NOT EXISTS telegram_handle VARCHAR(128),
+    ADD COLUMN IF NOT EXISTS instagram_handle VARCHAR(128),
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ADD COLUMN IF NOT EXISTS timepad_org_id VARCHAR(32) NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS timepad_api_key VARCHAR(255) NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS ticketscloud_org_id VARCHAR(128) NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS ticketscloud_api_key VARCHAR(255) NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS event_import_keywords VARCHAR(512) NOT NULL DEFAULT '';

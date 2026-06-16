@@ -1,0 +1,1 @@
+-- Irreversible safely: columns may have been added by 002/004 on fresh installs.
