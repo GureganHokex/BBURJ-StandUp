@@ -48,9 +48,8 @@ func main() {
 		if err := database.RunSQLMigrations(db, migrationsDir); err != nil {
 			log.Fatalf("migrations: %v", err)
 		}
-	}
-	if err := database.AutoMigrate(db); err != nil {
-		log.Fatalf("schema: %v", err)
+	} else if err := database.AutoMigrate(db); err != nil {
+		log.Fatalf("auto migrate: %v", err)
 	}
 
 	adminRepo := repository.NewAdminUserRepository(db)
