@@ -25,14 +25,17 @@
         {{if .Settings.ShowAbout}}<a href="/#about" class="{{if eq .Active "about"}}active{{end}}">ОБО МНЕ</a>{{end}}
         {{if .Settings.ShowPhotos}}<a href="/photos" class="{{if eq .Active "photos"}}active{{end}}">ФОТО</a>{{end}}
         {{if .Settings.ShowMerch}}<a href="/merch" class="{{if eq .Active "merch"}}active{{end}}">МЕРЧ</a>{{end}}
+        <a href="/#social" class="{{if eq .Active "social"}}active{{end}}">СОЦ СЕТИ</a>
         <a href="/#contacts" class="{{if eq .Active "contacts"}}active{{end}}">КОНТАКТЫ</a>
       </div>
+      <div class="site-nav-footer">
+        <div class="site-nav-socials" aria-label="Соцсети">
+          {{if .Settings.YouTubeURL}}<a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="social-icon-link" title="YouTube" aria-label="YouTube">{{template "public/icon_youtube" .}}</a>{{end}}
+          {{if .Settings.TelegramURL}}<a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="social-icon-link" title="Telegram" aria-label="Telegram">{{template "public/icon_telegram" .}}</a>{{end}}
+          {{if .Settings.InstagramURL}}<a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="social-icon-link" title="Instagram" aria-label="Instagram">{{template "public/icon_instagram" .}}</a>{{end}}
+        </div>
+      </div>
     </nav>
-    <div class="site-socials">
-      <a href="{{.Settings.YouTubeURL}}" target="_blank" rel="noopener" class="social-icon-link" title="YouTube" aria-label="YouTube">{{template "public/icon_youtube" .}}</a>
-      <a href="{{.Settings.TelegramURL}}" target="_blank" rel="noopener" class="social-icon-link" title="Telegram" aria-label="Telegram">{{template "public/icon_telegram" .}}</a>
-      <a href="{{.Settings.InstagramURL}}" target="_blank" rel="noopener" class="social-icon-link" title="Instagram" aria-label="Instagram">{{template "public/icon_instagram" .}}</a>
-    </div>
     <button type="button" class="site-menu-btn" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
       <span class="site-menu-icon" aria-hidden="true"></span>
     </button>
@@ -41,7 +44,7 @@
 
   {{.ContentHTML}}
 
-  <footer class="site-footer" id="contacts">
+  <footer class="site-footer">
     <span>© Большой Буржинский, 2026</span>
     <span>Дизайн и разработка — <a href="https://t.me/VINACURTWOTHOUSANT" target="_blank" rel="noopener">VINACUR</a></span>
   </footer>

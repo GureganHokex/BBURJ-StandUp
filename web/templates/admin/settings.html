@@ -75,6 +75,24 @@
       </div>
     </fieldset>
     <fieldset class="border border-slate-200 rounded p-4 space-y-3">
+      <legend class="text-sm font-semibold px-1">Контакты</legend>
+      <p class="text-xs text-slate-500">Отображаются в разделе «Контакты» на главной странице.</p>
+      <div class="grid grid-cols-1 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Почта</label>
+          <input name="contact_email" type="email" placeholder="booking@example.com" class="w-full border border-slate-300 rounded px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Telegram</label>
+          <input name="contact_telegram" type="text" placeholder="@username или ссылка t.me/..." class="w-full border border-slate-300 rounded px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">Телефон</label>
+          <input name="contact_phone" type="text" placeholder="+7 (999) 000-00-00" class="w-full border border-slate-300 rounded px-3 py-2">
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="border border-slate-200 rounded p-4 space-y-3">
       <legend class="text-sm font-semibold px-1">Разделы на сайте</legend>
       <p class="text-xs text-slate-500">Снимите галочку, чтобы скрыть раздел на сайте. Данные в админке останутся.</p>
       <div class="space-y-2">

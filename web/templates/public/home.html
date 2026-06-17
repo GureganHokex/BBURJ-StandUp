@@ -128,7 +128,7 @@
 </section>
 {{end}}
 
-<section class="social-cta">
+<section class="social-cta" id="social">
   <div class="social-cta-inner">
     <h2 class="social-cta-title">ПОДПИСЫВАЙСЯ<br>НА МОИ СОЦСЕТИ →</h2>
     <div class="social-grid">
@@ -150,4 +150,32 @@
     </div>
   </div>
 </section>
+
+{{if or .Settings.ContactEmail .Settings.ContactPhone .Settings.ContactTelegram}}
+<section class="contacts-section" id="contacts">
+  <div class="contacts-section-inner">
+    <h2 class="contacts-section-title">КОНТАКТЫ</h2>
+    <div class="contacts-grid">
+      {{if .Settings.ContactEmail}}
+      <div class="contact-card">
+        <span class="contact-card-label">Почта</span>
+        <a href="mailto:{{.Settings.ContactEmail}}" class="contact-card-value">{{.Settings.ContactEmail}}</a>
+      </div>
+      {{end}}
+      {{if .Settings.ContactTelegram}}
+      <div class="contact-card">
+        <span class="contact-card-label">Telegram</span>
+        <a href="{{telegramContactURL .Settings.ContactTelegram}}" target="_blank" rel="noopener" class="contact-card-value">{{.Settings.ContactTelegram}}</a>
+      </div>
+      {{end}}
+      {{if .Settings.ContactPhone}}
+      <div class="contact-card">
+        <span class="contact-card-label">Телефон</span>
+        <a href="tel:{{.Settings.ContactPhone}}" class="contact-card-value">{{.Settings.ContactPhone}}</a>
+      </div>
+      {{end}}
+    </div>
+  </div>
+</section>
+{{end}}
 {{end}}

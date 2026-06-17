@@ -8,8 +8,32 @@
 
   var mq = window.matchMedia('(max-width: 768px)');
 
+  function headerOffset() {
+    return topBar ? topBar.offsetHeight + 8 : 0;
+  }
+
+  function scrollToSection(id, behavior) {
+    if (!id) return false;
+    var el = document.getElementById(id);
+    if (!el) return false;
+    var top = el.getBoundingClientRect().top + window.scrollY - headerOffset();
+    window.scrollTo({ top: Math.max(0, top), behavior: behavior || 'smooth' });
+    return true;
+  }
+
+  function scrollToHashFromLocation() {
+    var id = window.location.hash ? window.location.hash.slice(1) : '';
+    if (!id) return;
+    function attempt() {
+      scrollToSection(id, 'instant');
+    }
+    requestAnimationFrame(function () {
+      attempt();
+      window.setTimeout(attempt, 150);
+    });
+  }
+
   function resetScrollX() {
-    window.scrollTo(0, window.scrollY);
     document.documentElement.scrollLeft = 0;
     document.body.scrollLeft = 0;
   }
@@ -33,7 +57,21 @@
   if (backdrop) backdrop.addEventListener('click', function () { setOpen(false); });
 
   nav.querySelectorAll('.site-nav-links a').forEach(function (link) {
-    link.addEventListener('click', function () { setOpen(false); });
+    link.addEventListener('click', function (e) {
+      var href = link.getAttribute('href') || '';
+      var hashIndex = href.indexOf('#');
+      if (hashIndex !== -1) {
+        var path = href.slice(0, hashIndex) || '/';
+        var id = href.slice(hashIndex + 1);
+        if (path === '/' && window.location.pathname === '/' && id) {
+          e.preventDefault();
+          if (scrollToSection(id)) {
+            history.pushState(null, '', '#' + id);
+          }
+        }
+      }
+      setOpen(false);
+    });
   });
 
   document.addEventListener('keydown', function (e) {
@@ -52,8 +90,15 @@
   mq.addEventListener('change', onBreakpoint);
   onBreakpoint();
   resetScrollX();
-  window.addEventListener('load', resetScrollX);
-  window.addEventListener('pageshow', resetScrollX);
+  scrollToHashFromLocation();
+  window.addEventListener('load', function () {
+    resetScrollX();
+    scrollToHashFromLocation();
+  });
+  window.addEventListener('pageshow', function () {
+    resetScrollX();
+    scrollToHashFromLocation();
+  });
 })();
 
 (function () {

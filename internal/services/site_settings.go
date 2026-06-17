@@ -21,6 +21,9 @@ type SiteSettingsInput struct {
 	YouTubeHandle    string
 	TelegramHandle   string
 	InstagramHandle  string
+	ContactEmail     string
+	ContactPhone     string
+	ContactTelegram  string
 	TimepadOrgID          string
 	TimepadAPIKey         string
 	TicketscloudOrgID     string
@@ -55,6 +58,9 @@ func (s *SiteSettingsService) SeedDefaults() (*models.SiteSettings, error) {
 		YouTubeHandle:   "@bburj",
 		TelegramHandle:  "@bburj",
 		InstagramHandle: "@bburj",
+		ContactEmail:    "booking@bburj.ru",
+		ContactPhone:    "+7 (999) 000-00-00",
+		ContactTelegram: "@bburj",
 		ShowEvents:      true,
 		ShowVideos:      true,
 		ShowPhotos:      true,
@@ -93,6 +99,9 @@ func (s *SiteSettingsService) Update(input SiteSettingsInput) (*models.SiteSetti
 	current.YouTubeHandle = input.YouTubeHandle
 	current.TelegramHandle = input.TelegramHandle
 	current.InstagramHandle = input.InstagramHandle
+	current.ContactEmail = input.ContactEmail
+	current.ContactPhone = input.ContactPhone
+	current.ContactTelegram = input.ContactTelegram
 	current.TimepadOrgID = input.TimepadOrgID
 	current.TicketscloudOrgID = input.TicketscloudOrgID
 	current.EventImportKeywords = input.EventImportKeywords

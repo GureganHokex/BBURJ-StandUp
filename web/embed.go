@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
+	"strings"
 )
 
 //go:embed templates/*
@@ -15,12 +16,13 @@ var embeddedStatic embed.FS
 
 func Templates() *template.Template {
 	return template.Must(template.New("").Funcs(template.FuncMap{
-		"formatPrice":     formatPriceRub,
-		"formatEventDate": formatEventDateCard,
-		"formatEventDay":  formatEventDay,
-		"formatEventMeta": formatEventMeta,
-		"upper":           upperASCII,
-		"attr":            attrText,
+		"formatPrice":        formatPriceRub,
+		"formatEventDate":    formatEventDateCard,
+		"formatEventDay":     formatEventDay,
+		"formatEventMeta":    formatEventMeta,
+		"upper":              upperASCII,
+		"attr":               attrText,
+		"telegramContactURL": telegramContactURL,
 	}).ParseFS(templateFS,
 		"templates/layouts/*.html",
 		"templates/public/*.html",
@@ -45,4 +47,15 @@ func formatPriceRub(kopecks int) string {
 		return fmt.Sprintf("%d ₽", rub)
 	}
 	return fmt.Sprintf("%d,%02d ₽", rub, kop)
+}
+
+func telegramContactURL(handle string) string {
+	h := strings.TrimSpace(handle)
+	if h == "" {
+		return ""
+	}
+	if strings.HasPrefix(h, "http://") || strings.HasPrefix(h, "https://") {
+		return h
+	}
+	return "https://t.me/" + strings.TrimPrefix(h, "@")
 }
