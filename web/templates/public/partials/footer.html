@@ -1,0 +1,31 @@
+{{define "public/footer"}}
+<footer class="site-footer">
+  <div class="site-footer-grid">
+    <div class="site-footer-col site-footer-col--brand">
+      <div class="site-footer-brand-row">
+        <span class="site-footer-age" aria-label="Контент 18+">18+</span>
+        <span class="site-footer-copy">© Большой Буржинский, 2026. Все права защищены.</span>
+      </div>
+      {{if .Settings.ContactEmail}}
+      <a href="mailto:{{.Settings.ContactEmail}}" class="site-footer-email">{{.Settings.ContactEmail}}</a>
+      {{end}}
+    </div>
+
+    <nav class="site-footer-col site-footer-legal" aria-label="Юридическая информация">
+      <a href="/privacy">Политика конфиденциальности</a>
+      <a href="/terms">Пользовательское соглашение</a>
+      <a href="/consent">Согласие на обработку ПД</a>
+    </nav>
+
+    <div class="site-footer-col site-footer-disclaimers">
+      <p class="site-footer-note">Все материалы носят юмористический характер и не направлены на оскорбление.</p>
+      <p class="site-footer-note">Копирование материалов запрещено без согласия правообладателя.</p>
+      {{if .Settings.InstagramURL}}
+      <p class="site-footer-note site-footer-meta">Instagram принадлежит Meta Platforms Inc., признана экстремистской организацией и запрещена на территории РФ.</p>
+      {{end}}
+    </div>
+
+    <p class="site-footer-col site-footer-credits">Дизайн и разработка — <a href="https://t.me/VINACURTWOTHOUSANT" target="_blank" rel="noopener">VINACUR</a></p>
+  </div>
+</footer>
+{{end}}

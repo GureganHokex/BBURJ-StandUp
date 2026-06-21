@@ -9,7 +9,6 @@
   <title>{{if .PageTitle}}{{.PageTitle}}{{else}}{{.Title}}{{end}} — Большой Буржинский</title>
   <link rel="icon" href="/static/img/logo.png" type="image/png">
   <link rel="stylesheet" href="/static/css/public.css">
-  <script src="/static/js/yandex-metrika.js"></script>
 </head>
 <body class="site">
   <header class="site-header" id="site-top">
@@ -44,15 +43,13 @@
 
   {{.ContentHTML}}
 
-  <footer class="site-footer">
-    <span>© Большой Буржинский, 2026</span>
-    <span>Дизайн и разработка — <a href="https://t.me/VINACURTWOTHOUSANT" target="_blank" rel="noopener">VINACUR</a></span>
-  </footer>
+  {{template "public/footer" .}}
+  {{template "public/cookie_banner" .}}
   {{template "public/lightbox" .}}
   {{template "public/event_modal" .}}
+  <script src="/static/js/cookies-consent.js" defer></script>
   <script src="/static/js/public.js" defer></script>
   <script src="/static/js/lightbox.js" defer></script>
-  <noscript><div class="metrika-noscript"><img src="https://mc.yandex.ru/watch/109884189" alt=""></div></noscript>
 </body>
 </html>
 {{end}}

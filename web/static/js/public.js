@@ -175,3 +175,29 @@
     if (e.key === 'Escape' && !modal.hidden) closeModal();
   });
 })();
+
+(function () {
+  document.addEventListener('submit', function (e) {
+    var form = e.target.closest('form.site-form[data-require-consent]');
+    if (!form) return;
+
+    var checkbox = form.querySelector('.form-consent-input');
+    if (!checkbox || checkbox.checked) return;
+
+    e.preventDefault();
+    checkbox.focus({ preventScroll: false });
+    var label = checkbox.closest('.form-consent');
+    if (label) {
+      label.classList.add('form-consent--error');
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var checkbox = e.target.closest('.form-consent-input');
+    if (!checkbox) return;
+    var label = checkbox.closest('.form-consent');
+    if (label && checkbox.checked) {
+      label.classList.remove('form-consent--error');
+    }
+  });
+})();

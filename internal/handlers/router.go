@@ -76,12 +76,16 @@ func NewRouter(deps Deps) *gin.Engine {
 		videos := public.NewVideosHandler(deps.Videos, deps.Settings, renderer)
 		photos := public.NewPhotosHandler(deps.Photos, deps.Settings, renderer)
 		merch := public.NewMerchHandler(deps.Merch, deps.Settings, renderer)
+		legal := public.NewLegalHandler(deps.Settings, renderer)
 
 		pub.GET("/", home.Index)
 		pub.GET("/events", events.List)
 		pub.GET("/videos", videos.List)
 		pub.GET("/photos", photos.List)
 		pub.GET("/merch", merch.List)
+		pub.GET("/privacy", legal.Privacy)
+		pub.GET("/terms", legal.Terms)
+		pub.GET("/consent", legal.Consent)
 	}
 
 	authHandler := admin.NewAuthHandler(deps.Auth, csrf, deps.Config, renderer)
